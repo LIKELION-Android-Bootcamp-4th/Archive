@@ -1,10 +1,10 @@
-import 'package:hansul_store/common/dto/base_request_dto.dart';
+import '../../../../common/model/dto/base_request_dto.dart';
 
-class LoginRequestDto extends BaseRequestDto{
+class LoginRequest extends BaseRequestDto{
   final String email;
   final String password;
 
-  LoginRequestDto({
+  LoginRequest({
     required this.email,
     required this.password,
   });

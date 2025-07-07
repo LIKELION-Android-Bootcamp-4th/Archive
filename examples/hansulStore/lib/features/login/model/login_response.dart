@@ -1,6 +1,6 @@
 
 
-import '../../../common/model/user.dart';
+import '../../../common/model/entity/user.dart';
 
 class LoginResponse {
   final String accessToken;

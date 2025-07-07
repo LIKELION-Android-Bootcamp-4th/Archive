@@ -1,4 +1,4 @@
-import 'package:hansul_store/common/model/base_response.dart';
+import 'package:hansul_store/common/model/entity/base_response.dart';
 
 class BaseResponseDto {
   final bool success;

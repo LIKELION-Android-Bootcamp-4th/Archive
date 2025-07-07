@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:hansul_store/common/dto/base_request_dto.dart';
-import '../../common/dto/base_response_dto.dart';
-import '/core/network/dio_client.dart';
+
+import '../dto/base_request_dto.dart';
+import '../dto/base_response_dto.dart';
+import '../network/dio_client.dart';
 
 class CommunityService {
 
@@ -46,12 +48,22 @@ class CommunityService {
 Future<BaseResponseDto> addPost(BaseRequestDto dto) async {
     try {
       debugPrint("service.addPost.request: ${dto.toJson()}");
-      final response = await dio.post('/posts',data: dto.toJson());
+      final response = await dio.post('/posts', data: dto.toJson());
       debugPrint("addPost response: ${response}");
       return BaseResponseDto.fromJson(response.data);
+    } on DioException catch (dioError) {
+      final statusCode = dioError.response?.statusCode;
+      final responseData = dioError.response?.data;
+
+      String message = '알 수 없는 오류가 발생했습니다.';
+
+      if (responseData is Map<String, dynamic>) {
+        message = responseData['message'] ?? responseData['error'] ?? message;
+      }
+      return BaseResponseDto.fromJson(responseData.data);
     } catch (e, stack) {
-      debugPrint("addPost 에러: $e");
       debugPrint("StackTrace: $stack");
+
       return BaseResponseDto(
         success: false,
         message: '게시글 생성 실패',
@@ -109,4 +121,7 @@ Future<BaseResponseDto> addPost(BaseRequestDto dto) async {
 
 // TODO: 대댓글 추가
 // Future<BaseResponseDto<ReplyDto?>> addReply(ReplyCreateDto dto) async {}
+
+// TODO 댓글 좋아요
+
 }

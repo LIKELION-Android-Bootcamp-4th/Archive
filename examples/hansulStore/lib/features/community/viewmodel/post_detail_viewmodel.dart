@@ -1,10 +1,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hansul_store/features/community/repository/community_repository.dart';
-import 'package:hansul_store/core/services/community_service.dart';
-import 'package:hansul_store/features/community/model/post.dart';
-import 'package:hansul_store/common/model/base_response.dart';
-import 'package:hansul_store/core/network/dio_client.dart';
+import 'package:hansul_store/common/model/entity/base_response.dart';
+
+import '../../../common/model/network/dio_client.dart';
+import '../../../common/model/services/community_service.dart';
+import '../model/entity/post.dart';
+
 
 final postIdProvider = Provider<String>((ref) => throw UnimplementedError());
 

@@ -1,13 +1,14 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hansul_store/core/network/dio_client.dart';
-import 'package:hansul_store/core/services/auth_service.dart';
-import 'package:hansul_store/core/services/secure_storage_service.dart';
-import 'package:hansul_store/features/login/dto/login_request_dto.dart';
 import 'package:hansul_store/common/providers/login_state_provider.dart';
 
-import '../../../common/model/base_response.dart';
-import '../../../common/model/user.dart';
+import '../../../common/model/entity/base_response.dart';
+import '../../../common/model/entity/user.dart';
+import '../../../common/model/network/dio_client.dart';
+import '../../../common/model/services/auth_service.dart';
+import '../../../common/model/services/secure_storage_service.dart';
+import '../model/dto/login_request.dart';
 import '../model/login_response.dart';
 
 
@@ -28,10 +29,8 @@ class LoginViewModel extends StateNotifier<AsyncValue<User?>> {
   Future<void> login(String email, String password) async {
     state = const AsyncValue.loading();
     try {
-      // 1. 로그인 요청 → BaseResponseDto2
-      final responseDto = await authService.login(
-        LoginRequestDto(email: email, password: password),
-      );
+      // 1. 로그인 요청 → BaseResponseDto
+      final responseDto = await authService.login(LoginRequest(email: email, password: password));
 
       // 2. 응답 처리
       if (responseDto.success && responseDto.data != null) {
@@ -59,6 +58,7 @@ class LoginViewModel extends StateNotifier<AsyncValue<User?>> {
       } else {
         throw Exception(responseDto.error ?? responseDto.message);
       }
+
     } catch (e, stackTrace) {
 
       debugPrint(e.toString());

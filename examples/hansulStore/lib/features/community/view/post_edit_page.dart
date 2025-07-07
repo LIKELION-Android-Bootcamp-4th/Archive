@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hansul_store/features/community/dto/add_post_request_dto.dart';
 import 'package:hansul_store/features/community/viewmodel/post_detail_viewmodel.dart';
-import '../model/post.dart';
+import '../model/dto/add_post_request.dart';
+import '../model/entity/post.dart';
 import '../viewmodel/post_edit_viewmodel.dart';
 import '../viewmodel/community_viewmodel.dart';
 import '../viewmodel/post_edit_viewmodel.dart';
@@ -47,7 +47,7 @@ class _PostEditPageState extends ConsumerState<PostEditPage> {
 
     final viewModel = ref.read(postEditViewModelProvider);
     final success = await viewModel.editPost(widget.post.id,
-        AddPostRequestDto(title: title, content: content));
+        AddPostRequest(title: title, content: content));
 
     if (success && mounted) {
 

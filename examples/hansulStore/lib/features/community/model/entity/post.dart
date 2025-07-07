@@ -1,4 +1,5 @@
-import '../../../common/model/user.dart';
+
+import '../../../../common/model/entity/user.dart';
 
 class Post {
   final String id;

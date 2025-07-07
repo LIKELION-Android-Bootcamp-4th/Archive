@@ -1,4 +1,4 @@
-import 'package:hansul_store/common/model/pagenation.dart';
+import 'package:hansul_store/common/model/entity/pagenation.dart';
 
 class ListResponse<T> {
   final List<T> items;

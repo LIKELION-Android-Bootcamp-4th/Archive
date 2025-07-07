@@ -1,4 +1,6 @@
-import 'package:hansul_store/common/dto/base_response_dto.dart';
+
+
+import '../dto/base_response_dto.dart';
 
 class BaseResponse<T> {
   final bool success;
@@ -22,7 +24,9 @@ class BaseResponse<T> {
     return BaseResponse<T>(
       success: dto.success,
       message: dto.message,
-      data: dto.data != null ? fromJsonT(dto.data!) : null,
+      data: dto.success && dto.data != null && fromJsonT != null
+          ? fromJsonT(dto.data!)
+          : null,
       error: dto.error,
       timestamp: dto.timestamp,
     );

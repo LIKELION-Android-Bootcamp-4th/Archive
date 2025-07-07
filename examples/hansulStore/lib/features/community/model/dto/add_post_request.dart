@@ -1,10 +1,10 @@
-import 'package:hansul_store/common/dto/base_request_dto.dart';
+import '../../../../common/model/dto/base_request_dto.dart';
 
-class AddPostRequestDto implements BaseRequestDto{
+class AddPostRequest implements BaseRequestDto{
   final String? category;
   final String title;
   final String content;
-  AddPostRequestDto({
+  AddPostRequest({
     this.category,
     required this.title,
     required this.content

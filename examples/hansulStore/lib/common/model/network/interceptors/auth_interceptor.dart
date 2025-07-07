@@ -3,9 +3,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
-import 'package:hansul_store/core/services/secure_storage_service.dart';
-import '../../../main.dart';
-import '../../services/auth_service.dart';
+import '../../../../main.dart';
+import '../../services/secure_storage_service.dart';
 
 class AuthInterceptor extends Interceptor {
   final String returnTo;

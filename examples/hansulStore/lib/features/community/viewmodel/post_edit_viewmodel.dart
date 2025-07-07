@@ -1,9 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:hansul_store/common/dto/base_request_dto.dart';
-import 'package:hansul_store/core/network/dio_client.dart';
-import 'package:hansul_store/core/services/community_service.dart';
 import 'package:hansul_store/features/community/repository/community_repository.dart';
+
+import '../../../common/model/dto/base_request_dto.dart';
+import '../../../common/model/network/dio_client.dart';
+import '../../../common/model/services/community_service.dart';
 
 final postEditViewModelProvider =
 Provider<PostEditViewModel>((ref) => PostEditViewModel());

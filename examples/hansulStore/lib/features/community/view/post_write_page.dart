@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hansul_store/features/community/dto/add_post_request_dto.dart';
 import 'package:hansul_store/features/community/viewmodel/community_viewmodel.dart';
+import '../model/dto/add_post_request.dart';
 import '../viewmodel/post_write_viewmodel.dart';
 
 class PostWritePage extends ConsumerStatefulWidget {
@@ -26,7 +26,7 @@ class _PostWritePageState extends ConsumerState<PostWritePage> {
 
     final viewModel = ref.read(postWriteViewModelProvider.notifier);
     await viewModel.createPost(
-      AddPostRequestDto(title: _titleController.text, content: _contentController.text)
+      AddPostRequest(title: _titleController.text, content: _contentController.text)
     );
 
     final result = ref.read(postWriteViewModelProvider);

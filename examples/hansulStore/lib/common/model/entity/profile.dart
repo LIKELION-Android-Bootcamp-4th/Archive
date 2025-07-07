@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:hansul_store/common/model/image.dart';
+import 'package:hansul_store/common/model/entity/image.dart';
 
 
 class Profile {

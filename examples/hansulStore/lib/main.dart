@@ -3,7 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hansul_store/features/community/view/community_page.dart';
 import 'package:hansul_store/features/community/view/post_write_page.dart';
-
+import 'common/model/services/secure_storage_service.dart';
 import 'features/community/view/post_edit_page.dart';
 import 'features/login/view/login_page.dart';
 
@@ -50,6 +50,12 @@ class HomePage extends StatelessWidget {
               child: const Text('로그인 하기'),
               onPressed: () {
                 Navigator.pushNamed(context, '/login');
+              },
+            ),
+            ElevatedButton(
+              child: const Text('로그아웃 하기'),
+              onPressed: () async {
+                await SecureStorageService.clear();
               },
             ),
             ElevatedButton(

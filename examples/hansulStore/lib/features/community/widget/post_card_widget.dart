@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../model/post.dart';
+
+import '../model/entity/post.dart';
 
 class PostCard extends StatelessWidget {
   final Post post;

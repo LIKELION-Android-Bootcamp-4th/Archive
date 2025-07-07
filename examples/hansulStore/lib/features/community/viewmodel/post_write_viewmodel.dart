@@ -1,11 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hansul_store/features/community/dto/add_post_request_dto.dart';
-import 'package:hansul_store/features/community/dto/community_request_dto.dart';
-import '/core/network/dio_client.dart';
-import 'package:hansul_store/common/model/base_response.dart';
-import 'package:hansul_store/core/services/community_service.dart';
-import 'package:hansul_store/features/community/model/post.dart';
+import 'package:hansul_store/common/model/entity/base_response.dart';
 import 'package:hansul_store/features/community/repository/community_repository.dart';
+
+import '../../../common/model/network/dio_client.dart';
+import '../../../common/model/services/community_service.dart';
+import '../model/dto/add_post_request.dart';
+import '../model/entity/post.dart';
 
 final postWriteViewModelProvider = AsyncNotifierProvider<PostWriteViewModel , BaseResponse<Post?>>(PostWriteViewModel.new);
 
@@ -18,9 +19,10 @@ class PostWriteViewModel extends AsyncNotifier<BaseResponse<Post?>> {
     return BaseResponse(success: false, message: "");
   }
 
-  Future<void> createPost(AddPostRequestDto request) async {
+  Future<void> createPost(AddPostRequest request) async {
     state = const AsyncLoading();
     final response = await _repository.addPost(request);
+    debugPrint("PostWriteViewModel.createPost.response: ${response.message}");
     state = AsyncData(response);
   }
 }

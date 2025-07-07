@@ -1,10 +1,11 @@
 import 'package:flutter/widgets.dart';
-import 'package:hansul_store/common/dto/base_request_dto.dart';
-import 'package:hansul_store/common/model/list_response.dart';
-import 'package:hansul_store/core/services/community_service.dart';
-import 'package:hansul_store/features/community/model/PostLike.dart';
-import 'package:hansul_store/features/community/model/post.dart';
-import '../../../common/model/base_response.dart';
+import 'package:hansul_store/common/model/entity/list_response.dart';
+
+import '../../../common/model/dto/base_request_dto.dart';
+import '../../../common/model/entity/base_response.dart';
+import '../../../common/model/services/community_service.dart';
+import '../model/entity/PostLike.dart';
+import '../model/entity/post.dart';
 
 
 abstract class CommunityRepository {
@@ -77,12 +78,15 @@ class CommunityRepositoryImpl implements CommunityRepository {
   Future<BaseResponse<Post?>> addPost(BaseRequestDto request) async {
     try {
       debugPrint("repository.addPost.request: ${request.toString()}");
+
       final responseDto = await _communityService.addPost(request);
+      debugPrint("repository.addPost.response: ${responseDto.error}");
 
       return BaseResponse<Post>.fromDto(
         responseDto,
             (json) => Post.fromJson(json),
       );
+
     } catch (e, stack ) {
       debugPrint("createPost error: $e");
       return BaseResponse<Post>(

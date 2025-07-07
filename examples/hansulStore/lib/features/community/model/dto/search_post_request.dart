@@ -1,10 +1,9 @@
-import 'package:hansul_store/common/dto/base_request_dto.dart';
-
-class CommunityRequestDto extends BaseRequestDto{
+import '../../../../common/model/dto/base_request_dto.dart';
+class SearchPostRequest extends BaseRequestDto{
   final String? category;
   final String? search;
 
-  CommunityRequestDto({
+  SearchPostRequest({
     required this.category,
     required this.search
   });
