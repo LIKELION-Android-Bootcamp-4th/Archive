@@ -22,7 +22,6 @@ fun ChatAppNavigation(navController: NavHostController) {
             if (roomId != null) {
                 ChatRoomScreen(roomId)
             }
-
         }
     }
 }
