@@ -20,9 +20,9 @@ interface ChatRoomDao {
 
     // 전체 채팅룸 목록 가져오기
     @Query("SELECT * FROM chat_room ORDER BY id desc")
-    suspend fun getChatRooms() : LiveData<List<ChatRoomEntity>>
+    fun getChatRooms() : LiveData<List<ChatRoomEntity>>
 
     // id 에 해당하는 채팅룸 데이터 가져오기
     @Query("SELECT * FROM chat_room WHERE id=:id")
-    suspend fun getChatRoom(id : Int) : ChatRoomEntity
+    fun getChatRoom(id : Int) : ChatRoomEntity
 }

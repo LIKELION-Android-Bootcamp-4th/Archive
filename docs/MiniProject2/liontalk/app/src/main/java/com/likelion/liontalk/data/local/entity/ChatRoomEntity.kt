@@ -9,5 +9,5 @@ data class ChatRoomEntity(
     val title : String,
     val owner : String,
     val users : List<String> = emptyList(),
-    val createdAt: String
+    val createdAt: Long
 )

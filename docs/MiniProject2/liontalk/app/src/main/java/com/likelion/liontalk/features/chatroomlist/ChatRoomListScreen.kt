@@ -1,6 +1,7 @@
 package com.likelion.liontalk.features.chatroomlist
 
 import android.app.Application
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -69,6 +70,7 @@ fun ChatRoomListScreen(navController : NavHostController) {
                         onClick = {
                             if ( newRoomName.isNotBlank()) {
                                 // TODO : 실제 방추가 로직 구현
+                                viewModel.createChatRoom(newRoomName)
                             }
                         },
                         modifier = Modifier.height(56.dp)
@@ -81,6 +83,11 @@ fun ChatRoomListScreen(navController : NavHostController) {
 
                 if ( state.isLoading ) {
                     CircularProgressIndicator()
+                } else if (state.chatRooms.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) { Text("채팅방이 없습니다.") }
                 } else {
                      LazyColumn {
                         items(state.chatRooms) { room ->
