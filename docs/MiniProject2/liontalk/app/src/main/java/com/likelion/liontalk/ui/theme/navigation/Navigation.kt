@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.likelion.liontalk.features.chatroom.ChatRoomScreen
 import com.likelion.liontalk.features.chatroomlist.ChatRoomListScreen
 
 @Composable
@@ -14,6 +15,14 @@ fun ChatAppNavigation(navController: NavHostController) {
     ) {
         composable(Screen.ChatRoomListScreen.route) {
             ChatRoomListScreen(navController)
+        }
+
+        composable(Screen.ChatRoomScreen.route) { backStackentry ->
+            val roomId = backStackentry.arguments?.getString("roomId")?.toIntOrNull()
+            if (roomId != null) {
+                ChatRoomScreen(roomId)
+            }
+
         }
     }
 }

@@ -91,7 +91,7 @@ fun ChatRoomListScreen(navController : NavHostController) {
                 } else {
                      LazyColumn {
                         items(state.chatRooms) { room ->
-                            Text(text = room.title)
+                            Text(text = room.title )
                         }
                     }
                 }
