@@ -9,7 +9,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.likelion.liontalk.data.local.AppDatabase
 import com.likelion.liontalk.data.local.entity.ChatRoomEntity
 import com.likelion.liontalk.data.repository.ChatRoomRepository
+import com.likelion.liontalk.data.repository.UserPreferenceRepository
 import com.likelion.liontalk.model.ChatRoomMapper.toDto
+import com.likelion.liontalk.model.ChatUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -19,9 +21,10 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
     private val _state = MutableLiveData(ChatRoomListState())
     val state : LiveData<ChatRoomListState> = _state
 
-//    private val chatRoomDao = AppDatabase.create(application).chatRoomDao()
-
     private val chatRoomRepository = ChatRoomRepository(application)
+
+    private val userPreferenceRepository = UserPreferenceRepository.getInstance(application)
+    val me : ChatUser get() = userPreferenceRepository.requireMe()
 
     init {
         loadChatRooms()
@@ -55,7 +58,7 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
             try {
                 val room = ChatRoomEntity(
                     title = title,
-                    owner = "gabseok",
+                    owner = me,
                     users = emptyList(),
                     createdAt = System.currentTimeMillis()
                 )

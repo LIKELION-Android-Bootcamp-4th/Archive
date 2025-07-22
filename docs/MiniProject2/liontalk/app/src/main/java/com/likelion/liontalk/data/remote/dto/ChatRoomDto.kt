@@ -1,9 +1,11 @@
 package com.likelion.liontalk.data.remote.dto
 
+import com.likelion.liontalk.model.ChatUser
+
 data class ChatRoomDto(
     val id: Int,
     val title: String,
-    val owner: String,
-    val users: List<String>,
+    val owner: ChatUser,
+    val users: List<ChatUser>,
     val createdAt: Long
 )

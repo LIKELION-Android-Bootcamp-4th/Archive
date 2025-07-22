@@ -6,4 +6,5 @@ sealed class Screen(val route: String) {
         fun createRoute(roomId : Int) = "chatroom_detail/$roomId"
     }
     object SettingScreen : Screen("setting")
+    object LauncherScreen : Screen("launcher")
 }

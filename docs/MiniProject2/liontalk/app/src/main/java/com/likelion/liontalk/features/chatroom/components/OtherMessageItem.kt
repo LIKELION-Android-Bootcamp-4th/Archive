@@ -27,7 +27,7 @@ fun OtherMessageItem(message: ChatMessageEntity) {
     ) {
         Column{
             Text(
-                text = message.sender,
+                text = message.sender.name,
                 fontSize = 11.sp,
                 color = Color.Gray,
                 modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)

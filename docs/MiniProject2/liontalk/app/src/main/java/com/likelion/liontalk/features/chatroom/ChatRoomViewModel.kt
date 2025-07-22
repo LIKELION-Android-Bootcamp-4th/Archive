@@ -10,27 +10,22 @@ import com.likelion.liontalk.data.local.entity.ChatMessageEntity
 import com.likelion.liontalk.data.remote.dto.ChatMessageDto
 import com.likelion.liontalk.data.remote.mqtt.MqttClient
 import com.likelion.liontalk.data.repository.ChatMessageRepository
+import com.likelion.liontalk.data.repository.UserPreferenceRepository
 import com.likelion.liontalk.model.ChatMessageMapper.toEntity
+import com.likelion.liontalk.model.ChatUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ChatRoomViewModel(application: Application, private val roomId: Int) : ViewModel(){
-//    private val chatMessageDao = AppDatabase.create(application)
-//        .chatMessageDao()
-
     private val chatMessageRepository = ChatMessageRepository(application)
-
-//    val messages : LiveData<List<ChatMessageEntity>>
-//        = chatMessageDao.getMessagesForRoom(roomId)
-
     val messages : LiveData<List<ChatMessageEntity>> = chatMessageRepository.getMessagesForRoom(roomId)
+
+    private val userPreferenceRepository = UserPreferenceRepository.getInstance(application)
+    val me : ChatUser get() = userPreferenceRepository.requireMe()
 
     init {
         viewModelScope.launch {
-
-//            chatMessageRepository.clearLocalDB()
-
             withContext(Dispatchers.IO) {
                 MqttClient.connect()
             }
@@ -45,7 +40,7 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
         viewModelScope.launch(Dispatchers.IO) {
             val dto = ChatMessageDto(
                 roomId = roomId,
-                sender = sender,
+                sender = me,
                 content = content,
                 createdAt = System.currentTimeMillis()
             )

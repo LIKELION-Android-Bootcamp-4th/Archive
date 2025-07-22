@@ -59,9 +59,7 @@ fun ChatRoomScreen(roomId: Int){
                 LazyColumn(modifier = Modifier.weight(1f)
                     .padding(8.dp)) {
                     items(messages) { message ->
-                        // TODO
-//                        Text("${message.content} (${message.sender})")
-                        ChatMessageItem(message,"gabseok" == message.sender )
+                        ChatMessageItem(message,viewModel.me.name == message.sender.name )
                     }
                 }
                 Row(
