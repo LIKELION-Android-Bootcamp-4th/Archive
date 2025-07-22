@@ -1,6 +1,7 @@
 package com.likelion.liontalk.features.chatroomlist
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -32,6 +33,9 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
 
     private fun loadChatRooms() {
         viewModelScope.launch {
+
+            userPreferenceRepository.loadUserFromStorage()
+
             _state.value = _state.value?.copy(isLoading = true)
             try {
                 withContext(Dispatchers.IO) {
@@ -54,14 +58,21 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
         }
     }
     fun createChatRoom(title: String ){
+        Log.d("ChatRoomListViewModel",title)
         viewModelScope.launch {
             try {
+
+                Log.d("ChatRoomListViewModel",me.toString())
+
                 val room = ChatRoomEntity(
                     title = title,
                     owner = me,
                     users = emptyList(),
                     createdAt = System.currentTimeMillis()
                 )
+
+
+                Log.d("ChatRoomListViewModel",room.toString())
                 chatRoomRepository.createChatRoom(room.toDto())
             } catch (e: Exception) {
                 _state.value = _state.value?.copy(isLoading = false, error = e.message)

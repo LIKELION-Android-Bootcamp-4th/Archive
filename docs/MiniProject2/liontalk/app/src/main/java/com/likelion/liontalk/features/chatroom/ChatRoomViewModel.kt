@@ -26,6 +26,9 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
 
     init {
         viewModelScope.launch {
+
+            userPreferenceRepository.loadUserFromStorage()
+
             withContext(Dispatchers.IO) {
                 MqttClient.connect()
             }
@@ -35,6 +38,7 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
             }
         }
     }
+
     // 메세지 전송
     fun sendMessage(sender: String, content: String) {
         viewModelScope.launch(Dispatchers.IO) {
