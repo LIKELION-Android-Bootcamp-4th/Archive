@@ -34,6 +34,7 @@ class ChatRoomRepository(context: Context) {
             Log.d("Sync","서버에서 채팅방 목록을 가져오는중...")
             val remoteRooms = remote.fetchRooms()       //원격 채팅방 목록
             Log.d("Sync","${remoteRooms.size} 개의 채팅바을 가져옴.")
+
             val entities = remoteRooms.map { it.toEntity()} //local entity 변환
             Log.d("Sync","${entities.size}개의 Entity 변환")
 
@@ -47,6 +48,7 @@ class ChatRoomRepository(context: Context) {
             Log.d("Sync","로컬 DB 저장 완료 : $dbCount")
 
         } catch (e: Exception ) {
+            Log.e("Sync", "채팅방 동기화 중 오류 발생: ${e.message}", e)
             throw e
         }
     }
