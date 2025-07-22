@@ -1,6 +1,7 @@
 package com.likelion.liontalk.features.chatroom
 
 import android.app.Application
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
@@ -33,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.likelion.liontalk.features.chatroom.components.ChatMessageItem
 import com.likelion.liontalk.features.chatroomlist.ChatRoomItem
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,6 +49,22 @@ fun ChatRoomScreen(roomId: Int){
     var inputMessage by remember { mutableStateOf("") }
 
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    val typingUser = remember {mutableStateOf<String?>(null)}
+    val eventFlow = viewModel.event
+    LaunchedEffect(Unit) {
+        eventFlow.collectLatest { event ->
+            when(event) {
+                is ChatRoomEvent.TypingStarted -> {
+//                    Toast.makeText(context,"${event.sender} 가 메세지를 입력 합니다.",Toast.LENGTH_SHORT).show()
+                    typingUser.value = event.sender
+                }
+                is ChatRoomEvent.TypingStopped -> {
+                    typingUser.value = null
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -65,6 +84,14 @@ fun ChatRoomScreen(roomId: Int){
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(8.dp)
                 ) {
+
+                    if(typingUser.value != null) {
+                        Text(
+                            text="${typingUser.value}님이 입력중...",
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                        )
+                    }
+
                     TextField(
                         value = inputMessage,
                         onValueChange = {inputMessage = it},
