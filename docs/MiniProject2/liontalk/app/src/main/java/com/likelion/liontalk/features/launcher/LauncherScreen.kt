@@ -29,7 +29,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun LauncherScreen(navHostController: NavHostController) {
     val context = LocalContext.current
-    val userPreferenceRepository = UserPreferenceRepository.getInstance(context)
+
 
     var alpha by remember  { mutableStateOf(0f) }
 
@@ -40,13 +40,17 @@ fun LauncherScreen(navHostController: NavHostController) {
     )
 
     LaunchedEffect(Unit) {
+
+        UserPreferenceRepository.init(context)
+        val userPreferenceRepository = UserPreferenceRepository.getInstance()
+
         delay(200)
         alpha = 1f
 
         delay(1500)
-
-        if(!userPreferenceRepository.isInitialized)
-            userPreferenceRepository.loadUserFromStorage()
+        Log.d("LauncherScreen","initialized before :${userPreferenceRepository.isInitialized}")
+//        if(!userPreferenceRepository.isInitialized)
+        userPreferenceRepository.loadUserFromStorage()
 
         val user = userPreferenceRepository.meOrNull
 
@@ -57,6 +61,7 @@ fun LauncherScreen(navHostController: NavHostController) {
         }
 
         navHostController.navigate(destination) {
+            Log.d("LauncherScreen","initialized after :${userPreferenceRepository.isInitialized}")
             popUpTo("launcher") {inclusive = true}
         }
     }

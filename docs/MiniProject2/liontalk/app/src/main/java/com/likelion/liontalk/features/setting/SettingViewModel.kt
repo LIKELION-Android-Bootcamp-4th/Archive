@@ -14,7 +14,7 @@ class SettingViewModel(application: Application) : AndroidViewModel(application)
     var userName by mutableStateOf("")
     var avatarUrl by mutableStateOf("")
 
-    private val userPreferenceRepository = UserPreferenceRepository.getInstance(application)
+    private val userPreferenceRepository = UserPreferenceRepository.getInstance()
 
     val me: ChatUser? get() = userPreferenceRepository.meOrNull
 

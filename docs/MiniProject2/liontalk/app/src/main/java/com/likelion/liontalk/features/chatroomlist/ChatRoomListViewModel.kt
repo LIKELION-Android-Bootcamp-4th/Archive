@@ -22,9 +22,9 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
     private val _state = MutableLiveData(ChatRoomListState())
     val state : LiveData<ChatRoomListState> = _state
 
-    private val chatRoomRepository = ChatRoomRepository(application)
+    private val chatRoomRepository = ChatRoomRepository(application.applicationContext)
 
-    private val userPreferenceRepository = UserPreferenceRepository.getInstance(application)
+    private val userPreferenceRepository = UserPreferenceRepository.getInstance()
     val me : ChatUser get() = userPreferenceRepository.requireMe()
 
     init {
@@ -33,9 +33,6 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
 
     private fun loadChatRooms() {
         viewModelScope.launch {
-
-            userPreferenceRepository.loadUserFromStorage()
-
             _state.value = _state.value?.copy(isLoading = true)
             try {
                 withContext(Dispatchers.IO) {

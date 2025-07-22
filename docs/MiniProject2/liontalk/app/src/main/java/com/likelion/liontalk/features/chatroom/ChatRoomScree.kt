@@ -3,17 +3,24 @@ package com.likelion.liontalk.features.chatroom
 import android.app.Application
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -46,7 +53,7 @@ fun ChatRoomScreen(roomId: Int){
     }
 
     val messages by viewModel.messages.observeAsState(emptyList())
-    var inputMessage by remember { mutableStateOf("") }
+    val inputMessage = remember { mutableStateOf("") }
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -92,26 +99,37 @@ fun ChatRoomScreen(roomId: Int){
                         )
                     }
 
-                    TextField(
-                        value = inputMessage,
-                        onValueChange = {inputMessage = it},
-                        modifier = Modifier.weight(1f),
-                        placeholder = { Text("메세지를 입력하세요")}
+                    OutlinedTextField(
+                        value = inputMessage.value,
+                        onValueChange = {
+                            inputMessage.value = it
+                            viewModel.onTypingChanged(it)
+                            if (it.isBlank()) {
+                                viewModel.stopTyping()
+                            }
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(56.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        placeholder = { Text("메세지 입력") },
+                        maxLines = 4
                     )
+
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Button(
                         onClick = {
-                            if(inputMessage.isNotBlank()) {
-                                viewModel.sendMessage("gabseok",inputMessage)
-                                inputMessage = ""
-                                keyboardController?.hide()
-
+                            if (inputMessage.value.isNotBlank()) {
+                                viewModel.sendMessage(inputMessage.value)
                             }
                         },
-                        modifier = Modifier.align(Alignment.CenterVertically)
+                        modifier = Modifier
+                            .height(56.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
                     ) {
-                        Text("전송")
+                        Icon(Icons.Default.Send, contentDescription = "전송")
                     }
                 }
             }

@@ -22,7 +22,7 @@ class UserPreferenceRepository private constructor(private val context: Context)
         val name = PreferenceDataStore.getString(context,"USER_NAME").first()
         val avataUrl = PreferenceDataStore.getString(context,"AVATA_URL").first()
 
-        Log.d("DS","$name , $avataUrl")
+        Log.d("DS","loadUserFromStorage - name : $name ")
 
         if(!name.isNullOrBlank()) {
             _user.value = ChatUser(name,avataUrl)
@@ -36,12 +36,22 @@ class UserPreferenceRepository private constructor(private val context: Context)
     }
 
     companion object {
+        @Volatile
         private var _instance: UserPreferenceRepository? = null
 
-        fun getInstance(context: Context):UserPreferenceRepository {
-            return _instance ?: synchronized(this) {
-                _instance ?: UserPreferenceRepository(context.applicationContext)
+        fun init(context: Context) {
+            if (_instance == null) {
+                synchronized(this) {
+                    if (_instance == null) {
+                        _instance = UserPreferenceRepository(context.applicationContext)
+                        Log.d("UserPrefRepo", "UserPreferenceRepository initialized with ${context.applicationContext}")
+                    }
+                }
             }
+        }
+
+        fun getInstance(): UserPreferenceRepository {
+            return _instance ?: throw IllegalStateException("UserPreferenceRepository not initialized")
         }
     }
 }
