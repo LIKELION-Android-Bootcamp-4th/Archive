@@ -13,7 +13,7 @@ interface ChatMessageDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(message: ChatMessageEntity)
 
-    @Query("SELECT * FROM chat_message WHERE roomId = :roomId ORDER BY id DESC")
+    @Query("SELECT * FROM chat_message WHERE roomId = :roomId ORDER BY id ASC")
     fun getMessagesForRoom(roomId: Int) : LiveData<List<ChatMessageEntity>>
 
     @Query("DELETE FROM chat_message")

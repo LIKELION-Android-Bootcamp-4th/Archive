@@ -31,6 +31,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.likelion.liontalk.features.chatroom.components.ChatMessageItem
+import com.likelion.liontalk.features.chatroomlist.ChatRoomItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,7 +60,8 @@ fun ChatRoomScreen(roomId: Int){
                     .padding(8.dp)) {
                     items(messages) { message ->
                         // TODO
-                        Text("${message.content} (${message.sender})")
+//                        Text("${message.content} (${message.sender})")
+                        ChatMessageItem(message,"gabseok" == message.sender )
                     }
                 }
                 Row(

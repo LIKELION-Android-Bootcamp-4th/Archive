@@ -29,7 +29,7 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
     init {
         viewModelScope.launch {
 
-            chatMessageRepository.clearLocalDB()
+//            chatMessageRepository.clearLocalDB()
 
             withContext(Dispatchers.IO) {
                 MqttClient.connect()
