@@ -10,6 +10,7 @@ import com.google.gson.Gson
 import com.likelion.liontalk.data.local.AppDatabase
 import com.likelion.liontalk.data.local.entity.ChatMessageEntity
 import com.likelion.liontalk.data.remote.dto.ChatMessageDto
+import com.likelion.liontalk.data.remote.dto.PresenceMessageDto
 import com.likelion.liontalk.data.remote.dto.TypingMessageDto
 import com.likelion.liontalk.data.remote.mqtt.MqttClient
 import com.likelion.liontalk.data.repository.ChatMessageRepository
@@ -20,13 +21,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ChatRoomViewModel(application: Application, private val roomId: Int) : ViewModel(){
     private val chatMessageRepository = ChatMessageRepository(application.applicationContext)
-    val messages : LiveData<List<ChatMessageEntity>> = chatMessageRepository.getMessagesForRoom(roomId)
+
+//    val messages : LiveData<List<ChatMessageEntity>> = chatMessageRepository.getMessagesForRoom(roomId)
+
+    val messages : StateFlow<List<ChatMessageEntity>> = chatMessageRepository.getMessagesForRoomFlow(roomId)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     private val userPreferenceRepository = UserPreferenceRepository.getInstance()
 
@@ -44,6 +56,9 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
             withContext(Dispatchers.IO) {
                 subscribeToMqttTopics()
             }
+
+            //최초 채팅방 진입시 입장 이벤트 전송
+            publishEnterStatus()
         }
     }
 
@@ -71,7 +86,7 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
     }
 
     // MQTT - methods
-    private val topics = listOf("message","typing")
+    private val topics = listOf("message","typing","enter","leave")
     //MQTT 구독 및 메세지 수신 처리
     private fun subscribeToMqttTopics() {
 //        MqttClient.connect()
@@ -92,6 +107,26 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
         when {
             topic.endsWith("/message") -> onReceivedMessage(message)
             topic.endsWith("/typing") -> onReceivedTyping(message)
+            topic.endsWith("/enter") -> onReceivedEnter(message)
+            topic.endsWith("/leave") -> onReceivedLeave(message)
+        }
+    }
+    //채팅방 입장 메세지 핸들러
+    private fun onReceivedEnter(message: String) {
+        val dto = Gson().fromJson(message, PresenceMessageDto::class.java)
+        if (dto.sender != me.name) {
+            viewModelScope.launch {
+                _event.emit(ChatRoomEvent.ChatRoomEnter(dto.sender))
+            }
+        }
+    }
+    //채팅방 퇴장 메세지 핸들러
+    private fun onReceivedLeave(message: String) {
+        val dto = Gson().fromJson(message, PresenceMessageDto::class.java)
+        if (dto.sender != me.name) {
+            viewModelScope.launch {
+                _event.emit(ChatRoomEvent.ChatRoomLeave(dto.sender))
+            }
         }
     }
 
@@ -139,8 +174,21 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
         typingStopJop?.cancel()
     }
 
+    // 메세지 입력 이벤트 퍼블리시
     private fun publishTypingStatus(isTyping:Boolean) {
         val json = Gson().toJson(TypingMessageDto(sender = me.name,isTyping))
         MqttClient.publish("liontalk/rooms/$roomId/typing", json)
+    }
+
+    // 채팅방 입장 이벤트 퍼블리시
+    private fun publishEnterStatus() {
+        val json = Gson().toJson(PresenceMessageDto( me.name))
+        MqttClient.publish("liontalk/rooms/$roomId/enter",json)
+    }
+
+    // 채팅방 퇴장 이벤트 퍼블리시
+    private fun publishLeaveStatus() {
+        val json = Gson().toJson(PresenceMessageDto(me.name))
+        MqttClient.publish("liontalk/rooms/$roomId/leave",json)
     }
 }
