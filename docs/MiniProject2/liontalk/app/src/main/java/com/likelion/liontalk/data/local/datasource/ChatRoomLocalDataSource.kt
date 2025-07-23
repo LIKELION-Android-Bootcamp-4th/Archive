@@ -49,4 +49,16 @@ class ChatRoomLocalDataSource(context: Context) {
     suspend fun getCount() : Int {
         return dao.getCount()
     }
+
+    suspend fun updateLastReadMessageId(id: Int, lastReadMessageId:Int) {
+        dao.updateLastReadMessageId(id,lastReadMessageId)
+    }
+
+    suspend fun updateUnReadCount(id: Int, unReadCount: Int) {
+        dao.updateUnReadCount(id, unReadCount)
+    }
+
+    suspend fun updateLockStatus(id: Int, isLocked: Boolean) {
+        dao.updateLockStatus(id, isLocked)
+    }
 }

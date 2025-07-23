@@ -7,8 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.gson.Gson
 import com.likelion.liontalk.data.local.AppDatabase
 import com.likelion.liontalk.data.local.entity.ChatRoomEntity
+import com.likelion.liontalk.data.remote.dto.ChatMessageDto
+import com.likelion.liontalk.data.remote.mqtt.MqttClient
 import com.likelion.liontalk.data.repository.ChatRoomRepository
 import com.likelion.liontalk.data.repository.UserPreferenceRepository
 import com.likelion.liontalk.model.ChatRoomMapper.toDto
@@ -52,17 +55,10 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
                             notJoinedRooms = notJoined
                         )
                     }
-
-//                    chatRoomRepository.getChatRoomEntities().observeForever { rooms ->
-//                        _state.postValue(
-//                            ChatRoomListState(
-//                                isLoading = false,
-//                                chatRooms = rooms
-//                            )
-//                        )
-//                    }
+                    withContext(Dispatchers.IO) {
+                        subscribeToMqttTopics()
+                    }
                 }
-
             } catch (e : Exception ) {
                 _state.value = _state.value.copy(isLoading = false, error = e.message)
             }
@@ -94,4 +90,29 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
     fun switchTab(tab:ChatRoomTab) {
         _state.value = _state.value.copy(currentTab = tab)
     }
+
+
+
+    //---------------------MQTT--------------------------
+
+    private val topics = listOf("message")
+    private fun subscribeToMqttTopics(){
+        MqttClient.connect()
+        MqttClient.setOnMessageReceived { topic, message -> {}}
+        topics.forEach { MqttClient.subscribe("liontalk/rooms/+/$it") }
+    }
+    private fun handleReceivedMessage(topic:String, message:String) {
+        when {
+            topic.endsWith("/message") -> onReceivedMessage(message)
+        }
+    }
+    private fun onReceivedMessage(message:String) {
+        try {
+            val dto = Gson().fromJson(message,ChatMessageDto::class.java)
+
+        } catch (e: Exception) {
+
+        }
+    }
+    //---------------------MQTT--------------------------
 }

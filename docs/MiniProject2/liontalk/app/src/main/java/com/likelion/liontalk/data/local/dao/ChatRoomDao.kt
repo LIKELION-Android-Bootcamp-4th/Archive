@@ -47,4 +47,14 @@ interface ChatRoomDao {
 
     @Query("DELETE FROM chat_room")
     suspend fun clear()
+
+    @Query("UPDATE chat_room SET lastReadMessageId =:lastReadMessageId WHERE id =:id")
+    suspend fun updateLastReadMessageId(id:Int, lastReadMessageId: Int)
+
+    @Query("UPDATE chat_room SET unReadCount =:unReadCount WHERE id=:id")
+    suspend fun updateUnReadCount(id:Int, unReadCount:Int)
+
+    @Query("UPDATE chat_room SET isLocked = :isLocked WHERE id=:id")
+    suspend fun updateLockStatus(id: Int, isLocked : Boolean)
+
 }
