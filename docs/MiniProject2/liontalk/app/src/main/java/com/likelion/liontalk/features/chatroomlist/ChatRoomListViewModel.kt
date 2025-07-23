@@ -14,13 +14,18 @@ import com.likelion.liontalk.data.repository.UserPreferenceRepository
 import com.likelion.liontalk.model.ChatRoomMapper.toDto
 import com.likelion.liontalk.model.ChatUser
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ChatRoomListViewModel(application: Application) : ViewModel() {
 
-    private val _state = MutableLiveData(ChatRoomListState())
-    val state : LiveData<ChatRoomListState> = _state
+//    private val _state = MutableLiveData(ChatRoomListState())
+//val state : LiveData<ChatRoomListState> = _state
+    private val _state = MutableStateFlow(ChatRoomListState())
+    val state : StateFlow<ChatRoomListState> = _state.asStateFlow()
 
     private val chatRoomRepository = ChatRoomRepository(application.applicationContext)
 
@@ -28,29 +33,38 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
     val me : ChatUser get() = userPreferenceRepository.requireMe()
 
     init {
-        loadChatRooms()
-    }
-
-    private fun loadChatRooms() {
         viewModelScope.launch {
-            _state.value = _state.value?.copy(isLoading = true)
+            _state.value = _state.value.copy(isLoading = true)
             try {
                 withContext(Dispatchers.IO) {
                     chatRoomRepository.syncFromServer()
                 }
                 withContext(Dispatchers.Main) {
-                    chatRoomRepository.getChatRoomEntities().observeForever { rooms ->
-                        _state.postValue(
-                            ChatRoomListState(
-                                isLoading = false,
-                                chatRooms = rooms
-                            )
+
+                    chatRoomRepository.getChatRoomsFlow().collect { rooms ->
+
+                        val joined = rooms.filter {it.users.any {p-> p.name == me.name}}
+                        val notJoined = rooms.filter { it.users.none {p-> p.name == me.name} }
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            chatRooms = rooms,
+                            joinedRooms = joined,
+                            notJoinedRooms = notJoined
                         )
                     }
+
+//                    chatRoomRepository.getChatRoomEntities().observeForever { rooms ->
+//                        _state.postValue(
+//                            ChatRoomListState(
+//                                isLoading = false,
+//                                chatRooms = rooms
+//                            )
+//                        )
+//                    }
                 }
 
             } catch (e : Exception ) {
-                _state.value = _state.value?.copy(isLoading = false, error = e.message)
+                _state.value = _state.value.copy(isLoading = false, error = e.message)
             }
         }
     }
@@ -72,8 +86,12 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
                 Log.d("ChatRoomListViewModel",room.toString())
                 chatRoomRepository.createChatRoom(room.toDto())
             } catch (e: Exception) {
-                _state.value = _state.value?.copy(isLoading = false, error = e.message)
+                _state.value = _state.value.copy(isLoading = false, error = e.message)
             }
         }
+    }
+
+    fun switchTab(tab:ChatRoomTab) {
+        _state.value = _state.value.copy(currentTab = tab)
     }
 }

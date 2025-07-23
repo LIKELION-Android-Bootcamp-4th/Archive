@@ -8,6 +8,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.likelion.liontalk.data.local.entity.ChatRoomEntity
 import com.likelion.liontalk.model.ChatUser
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ChatRoomDao {
@@ -22,6 +23,13 @@ interface ChatRoomDao {
     // 전체 채팅룸 목록 가져오기
     @Query("SELECT * FROM chat_room ORDER BY id desc")
     fun getChatRooms() : LiveData<List<ChatRoomEntity>>
+
+    @Query("SELECT * FROM chat_room ORDER BY id desc")
+    fun getChatRoomsList() : List<ChatRoomEntity>
+
+    // 전체 채팅룸 목록 가져오기
+    @Query("SELECT * FROM chat_room ORDER BY id desc")
+    fun getChatRoomsFlow() : Flow<List<ChatRoomEntity>>
 
     // id 에 해당하는 채팅룸 데이터 가져오기
     @Query("SELECT * FROM chat_room WHERE id=:id")
