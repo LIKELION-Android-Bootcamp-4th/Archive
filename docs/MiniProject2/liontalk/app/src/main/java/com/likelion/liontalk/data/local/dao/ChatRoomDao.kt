@@ -33,7 +33,7 @@ interface ChatRoomDao {
 
     // id 에 해당하는 채팅룸 데이터 가져오기
     @Query("SELECT * FROM chat_room WHERE id=:id")
-    fun getChatRoom(id : Int) : ChatRoomEntity
+    fun getChatRoom(id : Int) : ChatRoomEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(chatRooms : List<ChatRoomEntity>)

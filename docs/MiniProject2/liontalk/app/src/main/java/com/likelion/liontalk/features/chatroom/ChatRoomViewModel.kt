@@ -68,6 +68,11 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
 
     init {
         viewModelScope.launch {
+
+            withContext(Dispatchers.IO) {
+                chatMessageRepository.syncFromServer(roomId)
+            }
+
             withContext(Dispatchers.IO) {
                 MqttClient.connect()
             }
@@ -174,7 +179,8 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
 
             _event.emit(ChatRoomEvent.ScrollToBottom)
 
-            chatRoomRepository.updateLastReadMessageId(dto.roomId,dto.id)
+            chatRoomRepository.updateLastReadMessageId(roomId,dto.id)
+            chatRoomRepository.updateUnReadCount(roomId,0)
         }
     }
 //    private val _event = MutableSharedFlow<ChatRoomEvent>()
@@ -234,6 +240,14 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
         }
     }
 
+    fun back(onComplete: () -> Unit) {
+        viewModelScope.launch {
+            unsubscribeFromMqttTopics()
+
+            onComplete()
+        }
+    }
+
     // 메세지 입력 이벤트 퍼블리시
     private fun publishTypingStatus(isTyping:Boolean) {
         val json = Gson().toJson(TypingMessageDto(sender = me.name,isTyping))
@@ -250,8 +264,12 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
             chatRoomRepository.enterRoom(me,roomId)
 
             val latestMessage = chatMessageRepository.getLatestMessage(roomId)
+
             latestMessage?.let {
+                Log.d("publishEnterStatus", "latestMessage ${latestMessage.id}")
                 chatRoomRepository.updateLastReadMessageId(roomId,it.id)
+
+                chatRoomRepository.updateUnReadCount(roomId,0)
             }
         }
     }

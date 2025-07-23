@@ -115,7 +115,11 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
             },
                 navigationIcon = {
                     IconButton(onClick = {
-                        navController.popBackStack()
+
+                        viewModel.back {
+                            navController.popBackStack()
+                        }
+
                     }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
                     }

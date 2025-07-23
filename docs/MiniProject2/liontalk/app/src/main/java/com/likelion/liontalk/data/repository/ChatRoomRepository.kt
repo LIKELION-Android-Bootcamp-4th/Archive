@@ -41,29 +41,27 @@ class ChatRoomRepository(context: Context) {
     // sync : remote to local
     suspend fun syncFromServer() {
         try {
-            Log.d("Sync","서버에서 채팅방 목록을 가져오는중...")
-            val remoteRooms = remote.fetchRooms()       //원격 채팅방 목록
-            Log.d("Sync","${remoteRooms.size} 개의 채팅바을 가져옴.")
+            Log.d("Sync", "서버에서 채팅방 목록을 가져오는 중...")
+            val remoteRooms = remote.fetchRooms()
+            Log.d("Sync", "서버에서 ${remoteRooms.size}개의 채팅방을 가져옴")
 
-            val entities = remoteRooms.map { it.toEntity()} //local entity 변환
-            Log.d("Sync","${entities.size}개의 Entity 변환")
-
-            Log.d("Sync","remote : $remoteRooms")
-
-            local.clear()
-
-            Log.d("Sync","로컬 DB에 채팅방 데이터 저장...중")
-            local.insertAll(entities)            // local room insert many
-            Log.d("Sync","로컬 DB 저장 완료")
-
-            val localRooms = local.getChatRoomsList()
-            Log.d("Sync","local : $localRooms")
+            for (remoteRoom in remoteRooms) {
+                val localRoom = local.getChatRoom(remoteRoom.id)
+                if (localRoom != null) {
+                    // 기존 채팅방이 있으면 users만 업데이트
+                    local.updateUsers(remoteRoom.id, remoteRoom.users)
+                    Log.d("Sync", "기존 채팅방 '${remoteRoom.id}'의 참여자 업데이트")
+                } else {
+                    // 없으면 새로 insert
+                    local.insert(remoteRoom.toEntity())
+                    Log.d("Sync", "신규 채팅방 '${remoteRoom.id}' 추가")
+                }
+            }
             val dbCount = local.getCount()
-            Log.d("Sync","로컬 DB 저장 완료 : $dbCount")
+            Log.d("Sync", "로컬 DB에 ${dbCount}개 저장 완료")
 
-        } catch (e: Exception ) {
+        } catch (e: Exception) {
             Log.e("Sync", "채팅방 동기화 중 오류 발생: ${e.message}", e)
-            throw e
         }
     }
 
@@ -71,11 +69,9 @@ class ChatRoomRepository(context: Context) {
     suspend fun enterRoom(user:ChatUser,roomId: Int): ChatRoom {
         //1.서버로 부터 최신 룸 정보를 가져옴
         val remoteRoom = remote.fetchRoom(roomId)
-        Log.d("SCOTT","originalRoom:$remoteRoom")
         val requestDto = remoteRoom.addUserIfNotExists(user)
 
         val updatedRoom = remote.updateRoom(requestDto)
-        Log.d("SCOTT","updatedRoom:$updatedRoom")
         if(updatedRoom != null) {
             local.updateUsers(roomId,updatedRoom.users)
         }
@@ -103,8 +99,8 @@ class ChatRoomRepository(context: Context) {
         }
     }
 
-    suspend fun getChatRoom(roomId:Int) :ChatRoom {
-        return local.getChatRoom(roomId).toModel()
+    suspend fun getChatRoom(roomId:Int) :ChatRoom? {
+        return local.getChatRoom(roomId)?.toModel()
     }
 
 

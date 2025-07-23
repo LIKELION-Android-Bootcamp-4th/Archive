@@ -28,4 +28,10 @@ interface ChatMessageDao {
 
     @Query("SELECT * FROM chat_message WHERE roomId =:roomId ORDER BY id DESC LIMIT 1")
     suspend fun getLatestMessage(roomId: Int):ChatMessageEntity?
+
+    @Query("DELETE FROM chat_message WHERE roomId = :roomId ")
+    suspend fun deleteMessagesByRoomId(roomId:Int)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(messages: List<ChatMessageEntity>)
 }

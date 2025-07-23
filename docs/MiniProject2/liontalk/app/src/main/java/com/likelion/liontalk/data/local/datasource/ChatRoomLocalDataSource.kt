@@ -22,7 +22,7 @@ class ChatRoomLocalDataSource(context: Context) {
         return dao.getChatRoomsFlow()
     }
 
-    fun getChatRoom(roomId: Int) : ChatRoomEntity {
+    fun getChatRoom(roomId: Int) : ChatRoomEntity? {
         return dao.getChatRoom(roomId)
     }
 

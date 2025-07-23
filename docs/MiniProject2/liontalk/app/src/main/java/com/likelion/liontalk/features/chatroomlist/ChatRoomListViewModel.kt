@@ -99,7 +99,7 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
     private val topics = listOf("message")
     private fun subscribeToMqttTopics(){
         MqttClient.connect()
-        MqttClient.setOnMessageReceived { topic, message -> {}}
+        MqttClient.setOnMessageReceived { topic, message -> handleReceivedMessage(topic,message)}
         topics.forEach { MqttClient.subscribe("liontalk/rooms/+/$it") }
     }
     private fun handleReceivedMessage(topic:String, message:String) {
@@ -111,16 +111,20 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
         try {
             val dto = Gson().fromJson(message,ChatMessageDto::class.java)
             viewModelScope.launch {
-                val room = chatRoomRepository.getChatRoom(dto.roomId)
+                val room = withContext(Dispatchers.IO) {
+                    chatRoomRepository.getChatRoom(dto.roomId)
+                }
 
-                val unReadCount = chatMessageRepository.fetchUnreadCountFromServer(roomId = dto.roomId,room.lastReadMessageId)
-
-                chatRoomRepository.updateUnReadCount(roomId = dto.roomId,unReadCount)
+                val unReadCount = withContext(Dispatchers.IO) {
+                    chatMessageRepository.fetchUnreadCountFromServer(dto.roomId,
+                        room?.lastReadMessageId
+                    )
+                }
+                withContext(Dispatchers.IO) {
+                    chatRoomRepository.updateUnReadCount(dto.roomId, unReadCount)
+                }
             }
-
-
         } catch (e: Exception) {
-
         }
     }
     //---------------------MQTT--------------------------
