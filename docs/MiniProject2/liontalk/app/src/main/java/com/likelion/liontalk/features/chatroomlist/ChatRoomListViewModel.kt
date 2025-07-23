@@ -44,23 +44,22 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
                 withContext(Dispatchers.IO) {
                     chatRoomRepository.syncFromServer()
                 }
-                withContext(Dispatchers.Main) {
-
-                    chatRoomRepository.getChatRoomsFlow().collect { rooms ->
-
-                        val joined = rooms.filter {it.users.any {p-> p.name == me.name}}
-                        val notJoined = rooms.filter { it.users.none {p-> p.name == me.name} }
-                        _state.value = _state.value.copy(
-                            isLoading = false,
-                            chatRooms = rooms,
-                            joinedRooms = joined,
-                            notJoinedRooms = notJoined
-                        )
-                    }
-                    withContext(Dispatchers.IO) {
-                        subscribeToMqttTopics()
-                    }
+                withContext(Dispatchers.IO) {
+                    subscribeToMqttTopics()
                 }
+
+                chatRoomRepository.getChatRoomsFlow().collect { rooms ->
+
+                    val joined = rooms.filter {it.users.any {p-> p.name == me.name}}
+                    val notJoined = rooms.filter { it.users.none {p-> p.name == me.name} }
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        chatRooms = rooms,
+                        joinedRooms = joined,
+                        notJoinedRooms = notJoined
+                    )
+                }
+
             } catch (e : Exception ) {
                 _state.value = _state.value.copy(isLoading = false, error = e.message)
             }
