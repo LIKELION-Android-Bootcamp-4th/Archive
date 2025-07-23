@@ -7,7 +7,11 @@ import com.likelion.liontalk.data.local.datasource.ChatRoomLocalDataSource
 import com.likelion.liontalk.data.local.entity.ChatRoomEntity
 import com.likelion.liontalk.data.remote.datasource.ChatRoomRemoteDataSource
 import com.likelion.liontalk.data.remote.dto.ChatRoomDto
+import com.likelion.liontalk.data.remote.dto.addUserIfNotExists
+import com.likelion.liontalk.model.ChatRoom
 import com.likelion.liontalk.model.ChatRoomMapper.toEntity
+import com.likelion.liontalk.model.ChatRoomMapper.toModel
+import com.likelion.liontalk.model.ChatUser
 
 class ChatRoomRepository(context: Context) {
     private val remote = ChatRoomRemoteDataSource()
@@ -51,6 +55,21 @@ class ChatRoomRepository(context: Context) {
             Log.e("Sync", "채팅방 동기화 중 오류 발생: ${e.message}", e)
             throw e
         }
+    }
+
+    // 서버 및 로컬 room db 입장 처리
+    suspend fun enterRoom(user:ChatUser,roomId: Int): ChatRoom {
+        //1.서버로 부터 최신 룸 정보를 가져옴
+        val remoteRoom = remote.fetchRoom(roomId)
+        Log.d("SCOTT","originalRoom:$remoteRoom")
+        val requestDto = remoteRoom.addUserIfNotExists(user)
+
+        val updatedRoom = remote.updateRoom(requestDto)
+        Log.d("SCOTT","updatedRoom:$updatedRoom")
+        if(updatedRoom != null) {
+            local.updateUsers(roomId,updatedRoom.users)
+        }
+        return updatedRoom?.toModel() ?: throw Exception("서버 입장 처리 실패")
     }
 
 

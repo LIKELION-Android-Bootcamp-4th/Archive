@@ -100,6 +100,10 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
                         }
                     }
                 }
+                is ChatRoomEvent.ClearInput -> {
+                    inputMessage.value = ""
+                    keyboardController?.hide()
+                }
                 else -> Unit
             }
         }

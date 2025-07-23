@@ -6,6 +6,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ChatRoomApiService {
@@ -17,4 +18,10 @@ interface ChatRoomApiService {
 
     @DELETE("chatrooms/{id}")
     suspend fun deleteRoom(@Path("id") id: Int) : Response<Unit>
+
+    @GET("chatrooms/{id}")
+    suspend fun getChatRoom(@Path("id") id: Int) : ChatRoomDto
+
+    @PUT("chatrooms/{id}")
+    suspend fun updateChatRoom(@Path("id") id: Int, @Body dto: ChatRoomDto) : Response<ChatRoomDto>
 }

@@ -12,6 +12,14 @@ object ChatRoomMapper {
         createdAt
     )
 
+    fun ChatRoomDto.toModel() = ChatRoom(
+        id,
+        title,
+        owner,
+        users = emptyList(),
+        createdAt
+    )
+
     fun ChatRoomEntity.toDto() = ChatRoomDto(
         id,
         title,
@@ -19,4 +27,5 @@ object ChatRoomMapper {
         users = emptyList(),
         createdAt
     )
+
 }

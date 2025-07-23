@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import com.likelion.liontalk.data.local.AppDatabase
 import com.likelion.liontalk.data.local.entity.ChatRoomEntity
+import com.likelion.liontalk.model.ChatUser
 
 class ChatRoomLocalDataSource(context: Context) {
     private val dao = AppDatabase.create(context).chatRoomDao()
@@ -26,6 +27,10 @@ class ChatRoomLocalDataSource(context: Context) {
 
     suspend fun delete(chatRoom : ChatRoomEntity) {
         dao.delete(chatRoom)
+    }
+
+    suspend fun updateUsers(id:Int,users:List<ChatUser>) {
+        dao.updateUsers(id,users)
     }
 
     suspend fun clear() {

@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.likelion.liontalk.data.local.entity.ChatRoomEntity
+import com.likelion.liontalk.model.ChatUser
 
 @Dao
 interface ChatRoomDao {
@@ -28,6 +29,10 @@ interface ChatRoomDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(chatRooms : List<ChatRoomEntity>)
+
+    // 채팅방의 사용자 정보만 업데이트 함.
+    @Query("UPDATE chat_room SET users = :users WHERE id = :id")
+    suspend fun updateUsers(id:Int, users:List<ChatUser>)
 
     @Query("SELECT COUNT(*) FROM chat_room")
     suspend fun getCount():Int

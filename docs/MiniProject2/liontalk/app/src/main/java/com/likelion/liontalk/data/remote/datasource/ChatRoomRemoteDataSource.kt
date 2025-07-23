@@ -12,6 +12,18 @@ class ChatRoomRemoteDataSource {
         return api.getChatRooms()
     }
 
+    suspend fun fetchRoom(id: Int) : ChatRoomDto {
+        return api.getChatRoom(id)
+    }
+
+    suspend fun updateRoom(dto: ChatRoomDto) :ChatRoomDto? {
+        val response = api.updateChatRoom(dto.id, dto)
+        if(!response.isSuccessful) {
+            throw Exception("서버 업데이트 실패:${response.code()} ${response.message()} ")
+        }
+        return response.body()
+    }
+
     suspend fun createRoom(chatRoomDto: ChatRoomDto): ChatRoomDto? {
         val response = api.createRoom(chatRoomDto)
         if(!response.isSuccessful) {

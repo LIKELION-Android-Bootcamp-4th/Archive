@@ -14,6 +14,7 @@ import com.likelion.liontalk.data.remote.dto.PresenceMessageDto
 import com.likelion.liontalk.data.remote.dto.TypingMessageDto
 import com.likelion.liontalk.data.remote.mqtt.MqttClient
 import com.likelion.liontalk.data.repository.ChatMessageRepository
+import com.likelion.liontalk.data.repository.ChatRoomRepository
 import com.likelion.liontalk.data.repository.UserPreferenceRepository
 import com.likelion.liontalk.model.ChatMessage
 import com.likelion.liontalk.model.ChatMessageMapper.toEntity
@@ -33,7 +34,7 @@ import kotlinx.coroutines.withContext
 
 class ChatRoomViewModel(application: Application, private val roomId: Int) : ViewModel(){
     private val chatMessageRepository = ChatMessageRepository(application.applicationContext)
-
+    private val chatRoomRepository = ChatRoomRepository(application.applicationContext)
 //    val messages : LiveData<List<ChatMessageEntity>> = chatMessageRepository.getMessagesForRoom(roomId)
 
     // 시스템 메세지 리스트
@@ -97,9 +98,13 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
             if (responseDto != null) {
                 val json = Gson().toJson(responseDto)
                 MqttClient.publish("liontalk/rooms/$roomId/message", json)
-            }
 
-            //chatMessageDao.insert(messageEntity)
+                //메세지 입력 종료 퍼블리시
+                publishTypingStatus(false)
+
+                //메세지 입력창 초기화 이벤트
+                _event.emit(ChatRoomEvent.ClearInput)
+            }
         }
     }
 
@@ -134,6 +139,9 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
         val dto = Gson().fromJson(message, PresenceMessageDto::class.java)
         if (dto.sender != me.name) {
             viewModelScope.launch {
+
+
+
                 _event.emit(ChatRoomEvent.ChatRoomEnter(dto.sender))
 
                 postSystemMessage("${dto.sender} 님이 입장하였습니다.")
@@ -234,6 +242,11 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
     private fun publishEnterStatus() {
         val json = Gson().toJson(PresenceMessageDto( me.name))
         MqttClient.publish("liontalk/rooms/$roomId/enter",json)
+
+        // 서버 및 로컬 입장 처리
+        viewModelScope.launch {
+            chatRoomRepository.enterRoom(me,roomId)
+        }
     }
 
     // 채팅방 퇴장 이벤트 퍼블리시
