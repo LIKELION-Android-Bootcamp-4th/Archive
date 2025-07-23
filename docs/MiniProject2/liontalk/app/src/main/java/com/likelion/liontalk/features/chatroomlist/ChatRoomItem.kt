@@ -140,7 +140,20 @@ fun ChatRoomItem(room: ChatRoom,
                         overflow = TextOverflow.Ellipsis
                     )
 
-//                if (room.un)
+                if (room.unReadCount > 0) {
+                    Box(
+                        modifier = Modifier.background(Color.Red, shape = CircleShape)
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = room.unReadCount.toString(),
+                            color = Color.White,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
 
                 }
 

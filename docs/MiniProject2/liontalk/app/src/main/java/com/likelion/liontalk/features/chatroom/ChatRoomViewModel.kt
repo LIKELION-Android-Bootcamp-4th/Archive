@@ -173,6 +173,8 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
             chatMessageRepository.receiveMessage(dto)
 
             _event.emit(ChatRoomEvent.ScrollToBottom)
+
+            chatRoomRepository.updateLastReadMessageId(dto.roomId,dto.id)
         }
     }
 //    private val _event = MutableSharedFlow<ChatRoomEvent>()
@@ -247,7 +249,10 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
         viewModelScope.launch {
             chatRoomRepository.enterRoom(me,roomId)
 
-//            val latestMessage = chatMessageRepository.get
+            val latestMessage = chatMessageRepository.getLatestMessage(roomId)
+            latestMessage?.let {
+                chatRoomRepository.updateLastReadMessageId(roomId,it.id)
+            }
         }
     }
 
