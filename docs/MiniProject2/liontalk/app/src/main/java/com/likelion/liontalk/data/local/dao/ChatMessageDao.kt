@@ -25,4 +25,7 @@ interface ChatMessageDao {
 
     @Query("SELECT * FROM chat_message WHERE roomId =:roomId")
     suspend fun getMessages(roomId: Int) : List<ChatMessageEntity>
+
+    @Query("SELECT * FROM chat_message WHERE roomId =:roomId ORDER BY id DESC LIMIT 1")
+    suspend fun getLatestMessage(roomId: Int):ChatMessageEntity?
 }

@@ -72,4 +72,8 @@ class ChatMessageRepository(context: Context) {
             remoteMessages.drop(index + 1).size
         }
     }
+
+    suspend fun getLatestMessage(roomId: Int) : ChatMessage? {
+        return local.getLatestMessage(roomId)?.toModel()
+    }
 }

@@ -246,6 +246,8 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
         // 서버 및 로컬 입장 처리
         viewModelScope.launch {
             chatRoomRepository.enterRoom(me,roomId)
+
+//            val latestMessage = chatMessageRepository.get
         }
     }
 

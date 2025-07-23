@@ -28,4 +28,8 @@ class ChatMessageLocalDataSource(context: Context) {
     suspend fun getMessages(roomId: Int) : List<ChatMessageEntity> {
         return dao.getMessages(roomId)
     }
+
+    suspend fun getLatestMessage(roomId: Int):ChatMessageEntity ? {
+        return dao.getLatestMessage(roomId)
+    }
 }
