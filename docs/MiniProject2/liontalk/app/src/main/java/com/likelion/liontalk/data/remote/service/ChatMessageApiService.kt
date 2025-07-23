@@ -13,4 +13,7 @@ interface ChatMessageApiService {
 
     @GET("messages")
     suspend fun fetchMessagesByRoomId(@Query("roomId") roomId:Int):List<ChatMessageDto>
+
+    @GET("messages")
+    suspend fun fetchMessages():List<ChatMessageDto>
 }

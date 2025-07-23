@@ -42,10 +42,15 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
             _state.value = _state.value.copy(isLoading = true)
             try {
                 withContext(Dispatchers.IO) {
-                    chatRoomRepository.syncFromServer()
-                }
-                withContext(Dispatchers.IO) {
                     subscribeToMqttTopics()
+                }
+
+                withContext(Dispatchers.IO) {
+                    chatMessageRepository.syncAllMessagesFromServer()
+                }
+
+                withContext(Dispatchers.IO) {
+                    chatRoomRepository.syncFromServer()
                 }
 
                 chatRoomRepository.getChatRoomsFlow().collect { rooms ->

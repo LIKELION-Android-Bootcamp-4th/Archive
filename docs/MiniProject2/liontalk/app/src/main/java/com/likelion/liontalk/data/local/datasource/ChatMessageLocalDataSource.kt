@@ -40,4 +40,8 @@ class ChatMessageLocalDataSource(context: Context) {
     suspend fun insertAll(messages: List<ChatMessageEntity>) {
         dao.insertAll(messages)
     }
+
+    suspend fun getUnreadMessageCount(roomId: Int, lastReadMessageId: Int): Int {
+        return dao.getUnreadMessageCount(roomId,lastReadMessageId)
+    }
 }

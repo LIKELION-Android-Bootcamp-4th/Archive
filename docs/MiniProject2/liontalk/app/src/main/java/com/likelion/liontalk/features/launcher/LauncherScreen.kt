@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,15 +23,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.likelion.liontalk.data.remote.mqtt.MqttClient
 import com.likelion.liontalk.data.repository.UserPreferenceRepository
 import com.likelion.liontalk.ui.theme.navigation.Screen
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun LauncherScreen(navHostController: NavHostController) {
     val context = LocalContext.current
 
-
+    val coroutineScope = rememberCoroutineScope()
     var alpha by remember  { mutableStateOf(0f) }
 
     val animatedAlpha by animateFloatAsState(
@@ -58,6 +63,11 @@ fun LauncherScreen(navHostController: NavHostController) {
             Screen.SettingScreen.route
         } else {
             Screen.ChatRoomListScreen.route
+        }
+
+        withContext(Dispatchers.IO) {
+            MqttClient.connect()
+            true
         }
 
         navHostController.navigate(destination) {

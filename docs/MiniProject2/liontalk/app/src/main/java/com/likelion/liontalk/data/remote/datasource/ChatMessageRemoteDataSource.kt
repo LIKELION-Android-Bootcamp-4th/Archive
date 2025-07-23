@@ -15,6 +15,10 @@ class ChatMessageRemoteDataSource {
         return response.body()
     }
 
+    suspend fun fetchMessages():List<ChatMessageDto> {
+        return api.fetchMessages()
+    }
+
     suspend fun fetchMessagesByRoomId(roomId: Int):List<ChatMessageDto> {
         return api.fetchMessagesByRoomId(roomId)
     }
