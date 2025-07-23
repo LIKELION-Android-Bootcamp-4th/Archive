@@ -72,7 +72,7 @@ fun ChatRoomItem(room: ChatRoom,
                     .combinedClickable(
                         onClick = {},
                         onLongClick = {
-                            if( isOwner) {
+                            if (isOwner) {
 //                                showLockDialog = true
                             }
                         }
@@ -89,48 +89,60 @@ fun ChatRoomItem(room: ChatRoom,
                 }
             }
             Spacer(modifier = Modifier.width(12.dp))
-        }
 
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (isOwner) {
-                    Box(
-                        modifier = Modifier.background(Color(0xFF1976D2), shape = RoundedCornerShape(4.dp))
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                    ) {
-                        Text(text = "오너",color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (isOwner) {
+                        Box(
+                            modifier = Modifier.background(
+                                Color(0xFF1976D2),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = "오너",
+                                color = Color.White,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = room.owner.name,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Black,
+                            maxLines = 1
+                        )
                     }
-                } else {
+
+                    Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = room.owner.name,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Black,
-                        maxLines = 1
+                        text = "${room.users.size}명",
+                        fontSize = 12.sp,
+                        color = Color.Gray
                     )
                 }
-
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = "${room.users.size}명",
-                    fontSize = 12.sp,
-                    color = Color.Gray
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically)
-            {
-                Text(
-                    text = room.title,
-                    style = MaterialTheme.typography.titleLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                {
+                    Text(
+                        text = room.title,
+                        style = MaterialTheme.typography.titleLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
 
 //                if (room.un)
+
+                }
 
             }
 

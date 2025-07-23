@@ -134,11 +134,14 @@ fun ChatRoomListScreen(navController : NavHostController) {
 //                            Text(text = room.title )
                                 ChatRoomItem(
                                     room = room,
+                                    isOwner = room.owner.name == viewModel.me.name,
                                     onClick = {
                                         navController.navigate(
                                             Screen.ChatRoomScreen.createRoute(room.id)
                                         )
-                                    })
+                                    },
+                                    onLongPressDelete = {},
+                                    onLongPressLock = {})
                             }
                         }
                     }
