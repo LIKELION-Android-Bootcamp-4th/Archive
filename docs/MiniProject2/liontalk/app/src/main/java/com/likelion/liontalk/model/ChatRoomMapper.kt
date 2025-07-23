@@ -9,6 +9,9 @@ object ChatRoomMapper {
         title,
         owner,
         users,
+        0,
+        0,
+        isLocked,
         createdAt
     )
 
@@ -17,6 +20,9 @@ object ChatRoomMapper {
         title,
         owner,
         users,
+        0,
+        0,
+        isLocked,
         createdAt
     )
 
@@ -25,6 +31,7 @@ object ChatRoomMapper {
         title,
         owner,
         users,
+        isLocked,
         createdAt
     )
 
@@ -33,6 +40,9 @@ object ChatRoomMapper {
         title,
         owner,
         users,
+        unReadCount,
+        lastReadMessageId,
+        isLocked,
         createdAt
     )
 

@@ -82,6 +82,32 @@ class ChatRoomRepository(context: Context) {
         return updatedRoom?.toModel() ?: throw Exception("서버 입장 처리 실패")
     }
 
+    suspend fun updateLastReadMessageId(roomId : Int,lastReadMessageId: Int) {
+        local.updateLastReadMessageId(roomId,lastReadMessageId)
+    }
+
+    suspend fun updateUnReadCount(roomId:Int, unReadCount: Int) {
+        local.updateUnReadCount(roomId,unReadCount)
+    }
+    suspend fun updateLockStatus(roomId:Int, isLocked:Boolean) {
+        try {
+            val remoteRoom = remote.fetchRoom(roomId)
+            val updated = remoteRoom.copy(isLocked = isLocked)
+            val result = remote.updateRoom(updated) ?: throw Exception("방 잠금($isLocked) 실패")
+
+            result?.let {
+                local.updateLockStatus(roomId,isLocked)
+            }
+        } catch (e : Exception) {
+            Log.e("ROOM","채팅방 상태 변경중 오류 발생 : ${e.message}")
+        }
+    }
+
+    suspend fun getChatRoom(roomId:Int) :ChatRoom {
+        return local.getChatRoom(roomId).toModel()
+    }
+
+
 
 
 }

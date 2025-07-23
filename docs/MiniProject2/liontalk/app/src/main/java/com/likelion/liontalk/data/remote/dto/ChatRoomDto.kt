@@ -7,5 +7,6 @@ data class ChatRoomDto(
     val title: String,
     val owner: ChatUser,
     val users: List<ChatUser>,
+    val isLocked : Boolean,
     val createdAt: Long
 )

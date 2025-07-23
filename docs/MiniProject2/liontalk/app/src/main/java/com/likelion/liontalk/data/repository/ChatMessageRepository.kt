@@ -59,4 +59,17 @@ class ChatMessageRepository(context: Context) {
     suspend fun receiveMessage(message: ChatMessageDto) {
         local.insert(message.toEntity())
     }
+
+    suspend fun fetchUnreadCountFromServer(roomId:Int, lastReadMessageId: Int?):Int {
+        val remoteMessages = remote.fetchMessagesByRoomId(roomId)
+
+        if (lastReadMessageId == null) return remoteMessages.size
+
+        val index = remoteMessages.indexOfFirst { it.id == lastReadMessageId }
+        return if (index == -1) {
+            remoteMessages.size
+        } else {
+            remoteMessages.drop(index + 1).size
+        }
+    }
 }

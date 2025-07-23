@@ -12,6 +12,7 @@ import com.likelion.liontalk.data.local.AppDatabase
 import com.likelion.liontalk.data.local.entity.ChatRoomEntity
 import com.likelion.liontalk.data.remote.dto.ChatMessageDto
 import com.likelion.liontalk.data.remote.mqtt.MqttClient
+import com.likelion.liontalk.data.repository.ChatMessageRepository
 import com.likelion.liontalk.data.repository.ChatRoomRepository
 import com.likelion.liontalk.data.repository.UserPreferenceRepository
 import com.likelion.liontalk.model.ChatRoomMapper.toDto
@@ -31,6 +32,7 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
     val state : StateFlow<ChatRoomListState> = _state.asStateFlow()
 
     private val chatRoomRepository = ChatRoomRepository(application.applicationContext)
+    private val chatMessageRepository = ChatMessageRepository(application.applicationContext)
 
     private val userPreferenceRepository = UserPreferenceRepository.getInstance()
     val me : ChatUser get() = userPreferenceRepository.requireMe()
@@ -109,6 +111,14 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
     private fun onReceivedMessage(message:String) {
         try {
             val dto = Gson().fromJson(message,ChatMessageDto::class.java)
+            viewModelScope.launch {
+                val room = chatRoomRepository.getChatRoom(dto.roomId)
+
+                val unReadCount = chatMessageRepository.fetchUnreadCountFromServer(roomId = dto.roomId,room.lastReadMessageId)
+
+                chatRoomRepository.updateUnReadCount(roomId = dto.roomId,unReadCount)
+            }
+
 
         } catch (e: Exception) {
 
