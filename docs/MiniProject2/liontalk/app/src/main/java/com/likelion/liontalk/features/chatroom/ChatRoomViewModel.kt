@@ -15,15 +15,18 @@ import com.likelion.liontalk.data.remote.dto.TypingMessageDto
 import com.likelion.liontalk.data.remote.mqtt.MqttClient
 import com.likelion.liontalk.data.repository.ChatMessageRepository
 import com.likelion.liontalk.data.repository.UserPreferenceRepository
+import com.likelion.liontalk.model.ChatMessage
 import com.likelion.liontalk.model.ChatMessageMapper.toEntity
 import com.likelion.liontalk.model.ChatUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -33,12 +36,27 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
 
 //    val messages : LiveData<List<ChatMessageEntity>> = chatMessageRepository.getMessagesForRoom(roomId)
 
-    val messages : StateFlow<List<ChatMessageEntity>> = chatMessageRepository.getMessagesForRoomFlow(roomId)
-        .stateIn(
+    // 시스템 메세지 리스트
+    val _systemMessages = MutableStateFlow<List<ChatMessage>>(emptyList())
+
+    //채팅 메세지
+    val messages : StateFlow<List<ChatMessage>> = combine(
+        chatMessageRepository.getMessagesForRoomFlow(roomId),
+        _systemMessages
+    ) {
+        dbMessages, systemMessages ->
+        (dbMessages + systemMessages).sortedBy { it.createdAt }
+    }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
-        )
+    )
+//        val messages : StateFlow<List<ChatMessage>> = chatMessageRepository.getMessagesForRoomFlow(roomId)
+//        .stateIn(
+//            scope = viewModelScope,
+//            started = SharingStarted.WhileSubscribed(5000),
+//            initialValue = emptyList()
+//        )
 
     private val userPreferenceRepository = UserPreferenceRepository.getInstance()
 
@@ -117,6 +135,11 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
         if (dto.sender != me.name) {
             viewModelScope.launch {
                 _event.emit(ChatRoomEvent.ChatRoomEnter(dto.sender))
+
+                postSystemMessage("${dto.sender} 님이 입장하였습니다.")
+
+                _event.emit(ChatRoomEvent.ScrollToBottom)
+                //
             }
         }
     }
@@ -126,6 +149,10 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
         if (dto.sender != me.name) {
             viewModelScope.launch {
                 _event.emit(ChatRoomEvent.ChatRoomLeave(dto.sender))
+
+                postSystemMessage("${dto.sender} 님이 퇴장하였습니다.")
+
+                _event.emit(ChatRoomEvent.ScrollToBottom)
             }
         }
     }
@@ -136,6 +163,8 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
         viewModelScope.launch {
 //            chatMessageDao.insert(dto.toEntity())
             chatMessageRepository.receiveMessage(dto)
+
+            _event.emit(ChatRoomEvent.ScrollToBottom)
         }
     }
 //    private val _event = MutableSharedFlow<ChatRoomEvent>()
@@ -151,6 +180,18 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
                 _event.emit(event)
             }
         }
+    }
+
+    private fun postSystemMessage(content:String) {
+        val systemMessage = ChatMessage(
+            id = -1,
+            roomId = roomId,
+            sender = me,
+            content = content,
+            type = "system",
+            createdAt = System.currentTimeMillis()
+        )
+        _systemMessages.value = _systemMessages.value + systemMessage
     }
 
     private var typing = false
@@ -172,6 +213,15 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
         typing = false
         publishTypingStatus(false)
         typingStopJop?.cancel()
+    }
+
+    // 채팅방 나가기
+    fun leaveRoom(onComplete:() -> Unit) {
+        viewModelScope.launch {
+            publishLeaveStatus()
+
+            onComplete()
+        }
     }
 
     // 메세지 입력 이벤트 퍼블리시

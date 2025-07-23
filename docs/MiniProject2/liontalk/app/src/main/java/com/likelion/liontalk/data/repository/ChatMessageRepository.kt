@@ -7,8 +7,11 @@ import com.likelion.liontalk.data.local.datasource.ChatMessageLocalDataSource
 import com.likelion.liontalk.data.local.entity.ChatMessageEntity
 import com.likelion.liontalk.data.remote.datasource.ChatMessageRemoteDataSource
 import com.likelion.liontalk.data.remote.dto.ChatMessageDto
+import com.likelion.liontalk.model.ChatMessage
 import com.likelion.liontalk.model.ChatMessageMapper.toEntity
+import com.likelion.liontalk.model.ChatMessageMapper.toModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class ChatMessageRepository(context: Context) {
     private val remote = ChatMessageRemoteDataSource()
@@ -23,8 +26,10 @@ class ChatMessageRepository(context: Context) {
         return local.getMessageForRoom(roomId)
     }
 
-    fun getMessagesForRoomFlow(roomId: Int): Flow<List<ChatMessageEntity>> {
+    fun getMessagesForRoomFlow(roomId: Int): Flow<List<ChatMessage>> {
         return local.getMessageForRoomFlow(roomId)
+            .map { entity -> entity
+                .map { it.toModel() } }
     }
 
     // API 서버로 메세지를 보내고 로컬 db에 저장

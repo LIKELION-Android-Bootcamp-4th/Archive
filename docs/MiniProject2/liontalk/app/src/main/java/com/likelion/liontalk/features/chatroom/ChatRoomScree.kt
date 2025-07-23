@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -39,6 +40,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +53,7 @@ import androidx.navigation.NavController
 import com.likelion.liontalk.features.chatroom.components.ChatMessageItem
 import com.likelion.liontalk.features.chatroomlist.ChatRoomItem
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +72,10 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
     val typingUser = remember {mutableStateOf<String?>(null)}
     val eventFlow = viewModel.event
     var showLeaveDialog by remember { mutableStateOf(false) }
+
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
         eventFlow.collectLatest { event ->
             when(event) {
@@ -80,10 +87,18 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
                     typingUser.value = null
                 }
                 is ChatRoomEvent.ChatRoomEnter -> {
-                    Toast.makeText(context,"${event.name} 가 입장하였습니다.",Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(context,"${event.name} 가 입장하였습니다.",Toast.LENGTH_SHORT).show()
                 }
                 is ChatRoomEvent.ChatRoomLeave -> {
-                    Toast.makeText(context,"${event.name} 가 퇴장하였습니다.",Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(context,"${event.name} 가 퇴장하였습니다.",Toast.LENGTH_SHORT).show()
+                }
+                is ChatRoomEvent.ScrollToBottom -> {
+                    coroutineScope.launch {
+                        if(messages.isNotEmpty()) {
+
+                            listState.animateScrollToItem(messages.lastIndex)
+                        }
+                    }
                 }
                 else -> Unit
             }
@@ -117,7 +132,10 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
                     .navigationBarsPadding()
             ) {
                 LazyColumn(modifier = Modifier.weight(1f)
-                    .padding(8.dp)) {
+                    .padding(8.dp),
+                    state = listState
+
+                ) {
                     items(messages) { message ->
                         ChatMessageItem(message,viewModel.me.name == message.sender.name )
                     }
@@ -178,7 +196,9 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
             confirmButton = {
                 TextButton(onClick = {
                     showLeaveDialog = false
-                    //TODO : call viewModel
+                    viewModel.leaveRoom {
+                        navController.popBackStack()
+                    }
                 }) {
                     Text("확인")
                 }

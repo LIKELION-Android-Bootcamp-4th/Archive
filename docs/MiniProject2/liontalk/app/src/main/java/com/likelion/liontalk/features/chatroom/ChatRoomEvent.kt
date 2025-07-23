@@ -5,4 +5,5 @@ sealed class ChatRoomEvent {
     object TypingStopped : ChatRoomEvent()
     data class ChatRoomEnter(val name:String):ChatRoomEvent()
     data class ChatRoomLeave(val name:String):ChatRoomEvent()
+    object ScrollToBottom : ChatRoomEvent()
 }
