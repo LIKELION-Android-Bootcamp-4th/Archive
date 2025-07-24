@@ -30,7 +30,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
@@ -42,32 +41,27 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.likelion.liontalk.features.chatroom.components.ChatMessageItem
 import com.likelion.liontalk.features.chatroom.components.ChatRoomSettingContent
-import com.likelion.liontalk.features.chatroomlist.ChatRoomItem
+import com.likelion.liontalk.model.ChatUser
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -91,6 +85,10 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
 
     // 채팅방 설정창
     var showSettingsPanel by remember { mutableStateOf(false)}
+
+    // 추방 다이얼로그
+    var showKickDialog by remember { mutableStateOf(false) }
+    var kickTarget by remember { mutableStateOf<ChatUser?>(null)}
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -122,6 +120,14 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
                 is ChatRoomEvent.ClearInput -> {
                     inputMessage.value = ""
                     keyboardController?.hide()
+                }
+                is ChatRoomEvent.Kicked -> {
+                    Toast.makeText(
+                        navController.context,
+                        "채팅방에서 추방 당했습니다. ㅠ.ㅠ",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    navController.popBackStack()
                 }
                 else -> Unit
             }
@@ -237,6 +243,8 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
                 onClose = {showSettingsPanel = false},
                 onKickUser = {target ->
                     // TODO
+                    kickTarget = target
+                    showKickDialog = true
                 },
                 onLeaveRoom = {
                     showLeaveDialog = true
@@ -272,4 +280,39 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
             }
         )
     }
+
+    if (showKickDialog && kickTarget != null) {
+        AlertDialog(
+            title = { Text("추방 하기")},
+            text = { Text("${kickTarget?.name}님을 추방하시겠습니까?")},
+            onDismissRequest = {
+                showKickDialog = false
+                kickTarget = null
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.kickUser(kickTarget!!) {
+//                            showSettingsPanel = false
+                        }
+                        showKickDialog = false
+                        kickTarget = null
+                    }
+                ) {
+                    Text("추방")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showKickDialog = false
+                        kickTarget = null
+                    }
+                ) {
+                    Text("취소")
+                }
+            }
+        )
+    }
+
 }

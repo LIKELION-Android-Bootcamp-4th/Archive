@@ -9,6 +9,7 @@ import com.likelion.liontalk.data.local.entity.ChatRoomEntity
 import com.likelion.liontalk.data.remote.datasource.ChatRoomRemoteDataSource
 import com.likelion.liontalk.data.remote.dto.ChatRoomDto
 import com.likelion.liontalk.data.remote.dto.addUserIfNotExists
+import com.likelion.liontalk.data.remote.dto.removeUser
 import com.likelion.liontalk.model.ChatRoom
 import com.likelion.liontalk.model.ChatRoomMapper.toEntity
 import com.likelion.liontalk.model.ChatRoomMapper.toModel
@@ -136,6 +137,18 @@ class ChatRoomRepository(context: Context) {
             throw Exception("해당 채팅방이 없습니다.")}
     }
 
+    suspend fun removeUserFromRoom(user:ChatUser, roomId: Int) {
+        val room = remote.fetchRoom(roomId)
+        if(room != null) {
+            val updated = room.removeUser(user)
+            val updatedRoom = remote.updateRoom(updated)
+            if(updatedRoom != null) {
+                local.updateUsers(roomId,updatedRoom.users)
+            }
+        } else {
+            throw Exception("퇴장실패 : 채팅방 정보가 없습니다.")
+        }
+    }
 
 
 }

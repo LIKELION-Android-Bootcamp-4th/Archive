@@ -10,6 +10,7 @@ import com.google.gson.Gson
 import com.likelion.liontalk.data.local.AppDatabase
 import com.likelion.liontalk.data.local.entity.ChatMessageEntity
 import com.likelion.liontalk.data.remote.dto.ChatMessageDto
+import com.likelion.liontalk.data.remote.dto.KickMessageDto
 import com.likelion.liontalk.data.remote.dto.PresenceMessageDto
 import com.likelion.liontalk.data.remote.dto.TypingMessageDto
 import com.likelion.liontalk.data.remote.mqtt.MqttClient
@@ -130,7 +131,7 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
     }
 
     // MQTT - methods
-    private val topics = listOf("message","typing","enter","leave")
+    private val topics = listOf("message","typing","enter","leave","kick")
     //MQTT 구독 및 메세지 수신 처리
     private fun subscribeToMqttTopics() {
 //        MqttClient.connect()
@@ -153,8 +154,19 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
             topic.endsWith("/typing") -> onReceivedTyping(message)
             topic.endsWith("/enter") -> onReceivedEnter(message)
             topic.endsWith("/leave") -> onReceivedLeave(message)
+            topic.endsWith("/kick") -> onReceivedKick(message)
         }
     }
+
+    private fun onReceivedKick(message: String) {
+        val dto = Gson().fromJson(message,KickMessageDto::class.java)
+        if(dto.target == me.name) {
+            viewModelScope.launch {
+                _event.emit(ChatRoomEvent.Kicked)
+            }
+        }
+    }
+
     //채팅방 입장 메세지 핸들러
     private fun onReceivedEnter(message: String) {
         val dto = Gson().fromJson(message, PresenceMessageDto::class.java)
@@ -250,9 +262,24 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
     // 채팅방 나가기
     fun leaveRoom(onComplete:() -> Unit) {
         viewModelScope.launch {
+
+            chatRoomRepository.removeUserFromRoom(me,roomId)
+
             publishLeaveStatus()
 
-            onComplete()
+            withContext(Dispatchers.Main) {
+                onComplete()
+            }
+        }
+    }
+
+    fun kickUser(user: ChatUser, onComplete: () -> Unit) {
+        viewModelScope.launch {
+            chatRoomRepository.removeUserFromRoom(user,roomId)
+            publishKick(user)
+            withContext(Dispatchers.Main) {
+                onComplete()
+            }
         }
     }
 
@@ -297,5 +324,12 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
     private fun publishLeaveStatus() {
         val json = Gson().toJson(PresenceMessageDto(me.name))
         MqttClient.publish("liontalk/rooms/$roomId/leave",json)
+    }
+
+    // 사용자 추방 하기 이벤트 퍼블리시
+    fun publishKick(user:ChatUser) {
+        val data = mapOf("target" to user.name)
+        val json = Gson().toJson(data)
+        MqttClient.publish("liontalk/rooms/$roomId/kick",json)
     }
 }
