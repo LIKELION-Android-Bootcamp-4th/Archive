@@ -101,6 +101,39 @@ class ChatRoomRepository(context: Context) {
         }
     }
 
+    suspend fun syncRoom(roomId : Int) {
+        try {
+            val remoteRoom = remote.fetchRoom(roomId)
+
+            if (remoteRoom != null) {
+                val localRoom = local.getChatRoom(remoteRoom.id)
+                val lastReadMessageId = localRoom?.lastReadMessageId ?:0
+                val unReadCount = chatMessageLocal.getUnreadMessageCount(remoteRoom.id,lastReadMessageId)
+                if (localRoom != null) {
+                    local.updateLockStatus(remoteRoom.id,remoteRoom.isLocked)
+                    Log.d("Sync", "기존 채팅방 '${remoteRoom.id}'의 잠금[${remoteRoom.isLocked}] 업데이트")
+
+                    // 기존 채팅방이 있으면 participants만 업데이트
+                    local.updateUsers(remoteRoom.id, remoteRoom.users)
+                    Log.d("Sync", "기존 채팅방 '${remoteRoom.id}'의 참여자 업데이트")
+
+                    // 기존 채티방에 읽지 않은 메세지 카운트를 업데이트 한다.
+                    local.updateUnReadCount(remoteRoom.id, unReadCount)
+                    Log.d("ChattingRoom-Sync", "기존 채팅방 '${remoteRoom.id}'의 unReadCount:${unReadCount} 업데이트")
+                } else {
+                    // 없으면 새로 insert
+                    local.insert(remoteRoom.toEntity())
+                    Log.d("Sync", "신규 채팅방 '${remoteRoom.id}' 추가")
+                }
+            } else {
+                local.deleteById(roomId)
+            }
+
+        } catch (e: Exception) {
+            Log.e("Sync", "[$roomId]채팅방 동기화 중 오류 발생: ${e.message}", e)
+        }
+    }
+
     // 서버 및 로컬 room db 입장 처리
     suspend fun enterRoom(user:ChatUser,roomId: Int): ChatRoom {
         try {

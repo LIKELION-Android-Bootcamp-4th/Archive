@@ -179,7 +179,7 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : And
         if(dto.sender != me.name) {
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
-                    chatRoomRepository.syncFromServer()
+                    chatRoomRepository.syncRoom(roomId)
                 }
             }
         }
