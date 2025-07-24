@@ -40,7 +40,9 @@ class ChatRoomRepository(context: Context) {
     }
 
     suspend fun deleteChatRoomToRemote(roomId: Int) {
+
         remote.deleteRoom(roomId)
+
     }
     // sync : remote to local
     suspend fun syncFromServer() {
@@ -48,6 +50,16 @@ class ChatRoomRepository(context: Context) {
             Log.d("ChattingRoom-Sync", "서버에서 채팅방 목록을 가져오는 중...")
             val remoteRooms = remote.fetchRooms()
             Log.d("ChattingRoom-Sync", "서버에서 ${remoteRooms.size}개의 채팅방을 가져옴")
+
+
+            val remoteRoomIds = remoteRooms.map { it.id }.toSet()
+            val localRoomIds = local.getChatRoomsList().map {it.id}.toSet()
+
+            val roomsToDelete = localRoomIds - remoteRoomIds
+            for (roomId in roomsToDelete) {
+                local.deleteById(roomId)
+            }
+
 
             for (remoteRoom in remoteRooms) {
                 val localRoom = local.getChatRoom(remoteRoom.id)
@@ -137,6 +149,15 @@ class ChatRoomRepository(context: Context) {
             throw Exception("해당 채팅방이 없습니다.")}
     }
 
+    suspend fun getRoomFromRemote(roomId: Int) : ChatRoom? {
+        try {
+            return remote.fetchRoom(roomId).toModel()
+        } catch (e: Exception ) {
+            Log.e("","채팅방이 존재 하지 않습니다.${e.message}",e)
+            throw e
+        }
+    }
+
     suspend fun removeUserFromRoom(user:ChatUser, roomId: Int) {
         val room = remote.fetchRoom(roomId)
         if(room != null) {
@@ -150,5 +171,18 @@ class ChatRoomRepository(context: Context) {
         }
     }
 
-
+    suspend fun toggleLock(isLock : Boolean, roomId: Int) {
+        try {
+            val remoteRoom = remote.fetchRoom(roomId)
+            if(remoteRoom != null) {
+                val updated = remoteRoom.copy(isLocked = isLock)
+                val result = remote.updateRoom(updated) ?: throw Exception("방 잠금($isLock) 실패")
+                result?.let {
+                    local.updateLockStatus(roomId,isLock)
+                }
+            }
+        } catch (e:Exception) {
+            throw Exception("잠금 실패 : ${e.message}",e)
+        }
+    }
 }

@@ -17,9 +17,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -141,25 +143,31 @@ fun ChatRoomItem(room: ChatRoom,
                         modifier = Modifier.weight(1f)
                     )
 
-                if (room.unReadCount > 0) {
-                    Box(
-                        modifier = Modifier.background(Color.Red, shape = CircleShape)
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = room.unReadCount.toString(),
-                            color = Color.White,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
+                    if (room.unReadCount > 0) {
+                        Box(
+                            modifier = Modifier.background(Color.Red, shape = CircleShape)
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = room.unReadCount.toString(),
+                                color = Color.White,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    if (room.isLocked) {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = "방 잠김",
+                            modifier = Modifier.size(24.dp)
                         )
                     }
-                }
 
                 }
-
             }
-
         }
     }
 }

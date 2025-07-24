@@ -65,4 +65,8 @@ class ChatRoomLocalDataSource(context: Context) {
     suspend fun updateLockStatus(id: Int, isLocked: Boolean) {
         dao.updateLockStatus(id, isLocked)
     }
+
+    suspend fun deleteById(id:Int) {
+        dao.deleteById(id)
+    }
 }

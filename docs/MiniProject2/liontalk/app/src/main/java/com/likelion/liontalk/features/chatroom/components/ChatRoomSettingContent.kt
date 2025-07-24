@@ -121,6 +121,7 @@ fun ChatRoomSettingContent(
                     room?.isLocked?.let {
                         Switch(checked = it, onCheckedChange = {
                             // TODO room lock
+                            viewModel.toggleRoomLock(it)
                         })
                     }
                 }

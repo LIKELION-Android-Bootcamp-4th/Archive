@@ -2,6 +2,7 @@ package com.likelion.liontalk.features.chatroomlist
 
 
 import android.app.Application
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -148,9 +149,22 @@ fun ChatRoomListScreen(navController : NavHostController) {
                                     room = room,
                                     isOwner = room.owner.name == viewModel.me.name,
                                     onClick = {
-                                        navController.navigate(
-                                            Screen.ChatRoomScreen.createRoute(room.id)
-                                        )
+
+                                        val isMeOwner = room.owner.name == viewModel.me.name
+                                        val isMeparticipant = room.users.any { it.name == viewModel.me.name}
+                                        if (!room.isLocked || isMeOwner || isMeparticipant) {
+                                            navController.navigate(
+                                                Screen.ChatRoomScreen.createRoute(room.id)
+                                            )
+                                        } else {
+                                            Toast.makeText(
+                                                context,
+                                                "잠긴 방입니다.",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+
+
                                     },
                                     onLongPressDelete = {},
                                     onLongPressLock = {})

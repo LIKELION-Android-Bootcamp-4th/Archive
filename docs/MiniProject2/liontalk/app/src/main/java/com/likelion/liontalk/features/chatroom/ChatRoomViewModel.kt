@@ -359,5 +359,10 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
         MqttClient.publish("liontalk/rooms/$roomId/kick",json)
     }
 
+    fun toggleRoomLock(isLock : Boolean) {
+        viewModelScope.launch {
+            chatRoomRepository.toggleLock(isLock,roomId)
+        }
+    }
 
 }

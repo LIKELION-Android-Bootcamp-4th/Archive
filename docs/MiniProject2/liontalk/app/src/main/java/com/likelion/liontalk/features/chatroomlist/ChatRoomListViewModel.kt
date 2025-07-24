@@ -99,7 +99,15 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
 
     fun removeChatRoom(roomId: Int) {
         viewModelScope.launch {
-            chatRoomRepository.deleteChatRoomToRemote(roomId)
+            try {
+                val room = chatRoomRepository.getRoomFromRemote(roomId)
+                if(room != null){
+                    chatRoomRepository.deleteChatRoomToRemote(roomId)
+                }
+
+            } catch (e: Exception) {
+
+            }
         }
     }
 

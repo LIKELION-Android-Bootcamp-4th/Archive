@@ -60,4 +60,6 @@ interface ChatRoomDao {
     @Query("UPDATE chat_room SET isLocked = :isLocked WHERE id=:id")
     suspend fun updateLockStatus(id: Int, isLocked : Boolean)
 
+    @Query("DELETE FROM chat_room WHERE id=:id")
+    suspend fun deleteById(id:Int)
 }
