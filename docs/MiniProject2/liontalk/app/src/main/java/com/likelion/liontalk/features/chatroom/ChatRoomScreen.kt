@@ -60,6 +60,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.likelion.liontalk.common.sound.SoundPlayer
+import com.likelion.liontalk.common.sound.SoundType
 import com.likelion.liontalk.features.chatroom.components.ChatMessageItem
 import com.likelion.liontalk.features.chatroom.components.ChatRoomSettingContent
 import com.likelion.liontalk.features.chatroom.components.ExplosionEffect
@@ -101,6 +103,11 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
+    fun playSentSound(soundtype: SoundType) {
+        val soundPlayer = SoundPlayer(context)
+        soundPlayer.play(soundtype)
+    }
+
     LaunchedEffect(Unit) {
         eventFlow.collectLatest { event ->
             when(event) {
@@ -112,6 +119,7 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
                     typingUser.value = null
                 }
                 is ChatRoomEvent.ChatRoomEnter -> {
+                    playSentSound(SoundType.ENTER_ROOM)
 //                    Toast.makeText(context,"${event.name} 가 입장하였습니다.",Toast.LENGTH_SHORT).show()
                 }
                 is ChatRoomEvent.ChatRoomLeave -> {

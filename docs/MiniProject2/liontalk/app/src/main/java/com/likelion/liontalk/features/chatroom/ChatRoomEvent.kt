@@ -10,4 +10,7 @@ sealed class ChatRoomEvent {
     object Kicked : ChatRoomEvent()
 
     object Exploded : ChatRoomEvent()
+
+    object MessageReceived
+
 }
