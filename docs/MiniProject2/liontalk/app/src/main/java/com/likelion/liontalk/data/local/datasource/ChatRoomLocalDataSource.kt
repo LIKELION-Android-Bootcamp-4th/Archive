@@ -26,6 +26,10 @@ class ChatRoomLocalDataSource(context: Context) {
         return dao.getChatRoom(roomId)
     }
 
+    fun getChatRoomFlow(roomId: Int) : Flow<ChatRoomEntity?> {
+        return dao.getChatRoomFlow(roomId)
+    }
+
     suspend fun insert(chatRoom : ChatRoomEntity) {
         dao.insert(chatRoom)
     }

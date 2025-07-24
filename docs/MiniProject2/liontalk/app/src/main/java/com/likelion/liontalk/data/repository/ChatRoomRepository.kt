@@ -87,15 +87,22 @@ class ChatRoomRepository(context: Context) {
 
     // 서버 및 로컬 room db 입장 처리
     suspend fun enterRoom(user:ChatUser,roomId: Int): ChatRoom {
-        //1.서버로 부터 최신 룸 정보를 가져옴
-        val remoteRoom = remote.fetchRoom(roomId)
-        val requestDto = remoteRoom.addUserIfNotExists(user)
-
-        val updatedRoom = remote.updateRoom(requestDto)
-        if(updatedRoom != null) {
-            local.updateUsers(roomId,updatedRoom.users)
+        try {
+            //1.서버로 부터 최신 룸 정보를 가져옴
+            Log.d("","enterRoom - user : $user roomId:$roomId")
+            val remoteRoom = remote.fetchRoom(roomId)
+            val requestDto = remoteRoom.addUserIfNotExists(user)
+            Log.d("","enterRoom - requestDto : $requestDto")
+            val updatedRoom = remote.updateRoom(requestDto)
+            if (updatedRoom != null) {
+                Log.d("","enterRoom - updatedRoom : $updatedRoom")
+                local.updateUsers(roomId, updatedRoom.users)
+            }
+            return updatedRoom?.toModel() ?: throw Exception("서버 입장 처리 실패")
+        } catch(e:Exception) {
+            Log.e("","enterroom error",e)
+            throw Exception("서버 입장 처리 실패")
         }
-        return updatedRoom?.toModel() ?: throw Exception("서버 입장 처리 실패")
     }
 
     suspend fun updateLastReadMessageId(roomId : Int,lastReadMessageId: Int) {
@@ -123,6 +130,11 @@ class ChatRoomRepository(context: Context) {
         return local.getChatRoom(roomId)?.toModel()
     }
 
+
+    fun getChatRoomFlow(roomId: Int):Flow<ChatRoom> {
+        return local.getChatRoomFlow(roomId).map { it?.toModel() ?:
+            throw Exception("해당 채팅방이 없습니다.")}
+    }
 
 
 

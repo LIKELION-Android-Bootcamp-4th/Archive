@@ -18,6 +18,7 @@ import com.likelion.liontalk.data.repository.ChatRoomRepository
 import com.likelion.liontalk.data.repository.UserPreferenceRepository
 import com.likelion.liontalk.model.ChatMessage
 import com.likelion.liontalk.model.ChatMessageMapper.toEntity
+import com.likelion.liontalk.model.ChatRoom
 import com.likelion.liontalk.model.ChatUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -63,29 +64,44 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
 
     val me : ChatUser get() = userPreferenceRepository.requireMe()
 
+    // 현재 채팅방 정보
+    private val _room = MutableStateFlow<ChatRoom?>(null)
+    val room: StateFlow<ChatRoom?> = _room
+
     private val _event = MutableSharedFlow<ChatRoomEvent>()
     val event = _event.asSharedFlow()
 
     init {
         viewModelScope.launch {
 
-            withContext(Dispatchers.IO) {
-                chatMessageRepository.syncFromServer(roomId)
-            }
+            try {
+                withContext(Dispatchers.IO) {
+                    chatMessageRepository.syncFromServer(roomId)
+                }
 
-            withContext(Dispatchers.IO) {
-                MqttClient.connect()
-            }
+                withContext(Dispatchers.IO) {
+                    subscribeToMqttTopics()
+                }
 
-            withContext(Dispatchers.IO) {
-                subscribeToMqttTopics()
-            }
+                loadRoomInfo()
 
-            //최초 채팅방 진입시 입장 이벤트 전송
-            publishEnterStatus()
+                //최초 채팅방 진입시 입장 이벤트 전송
+                publishEnterStatus()
+            } catch ( e : Exception) {
+                Log.e("CRVM" , e.stackTraceToString())
+            }
         }
     }
 
+    private fun loadRoomInfo() {
+        viewModelScope.launch {
+            chatRoomRepository.getChatRoomFlow(roomId).collect { room ->
+                room.let {
+                    _room.value = it
+                }
+            }
+        }
+    }
 
     // 메세지 전송
     fun sendMessage(content: String) {
@@ -261,7 +277,10 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : Vie
 
         // 서버 및 로컬 입장 처리
         viewModelScope.launch {
-            chatRoomRepository.enterRoom(me,roomId)
+            withContext(Dispatchers.IO){
+                chatRoomRepository.enterRoom(me,roomId)
+            }
+
 
             val latestMessage = chatMessageRepository.getLatestMessage(roomId)
 
