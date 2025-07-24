@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -67,6 +68,17 @@ fun ChatRoomListScreen(navController : NavHostController) {
         ChatRoomTab.JOINED to "참여중",
         ChatRoomTab.NOT_JOINED to "미참여"
     )
+
+    val explodedRoomId = navController.currentBackStackEntry?.savedStateHandle?.get<Int>("explodedRoomId")
+    LaunchedEffect(explodedRoomId) {
+        explodedRoomId?.let {
+            viewModel.removeChatRoom(explodedRoomId)
+
+            navController.currentBackStackEntry?.savedStateHandle?.remove<Int>("explodedRoomId")
+
+        }
+    }
+
 
     Scaffold(
         topBar = {

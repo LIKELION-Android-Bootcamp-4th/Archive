@@ -8,4 +8,6 @@ sealed class ChatRoomEvent {
     object ScrollToBottom : ChatRoomEvent()
     object ClearInput : ChatRoomEvent()
     object Kicked : ChatRoomEvent()
+
+    object Exploded : ChatRoomEvent()
 }

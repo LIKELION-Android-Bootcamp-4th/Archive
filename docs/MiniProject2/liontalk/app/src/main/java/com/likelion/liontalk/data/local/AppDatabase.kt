@@ -12,7 +12,7 @@ import com.likelion.liontalk.data.local.entity.ChatMessageEntity
 import com.likelion.liontalk.data.local.entity.ChatRoomEntity
 
 @TypeConverters(Converter::class)
-@Database(entities = [ChatRoomEntity::class , ChatMessageEntity::class], version = 11)
+@Database(entities = [ChatRoomEntity::class , ChatMessageEntity::class], version = 14)
 abstract class AppDatabase : RoomDatabase(){
     abstract fun chatRoomDao() : ChatRoomDao
     abstract fun chatMessageDao() : ChatMessageDao

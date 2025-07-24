@@ -61,6 +61,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.likelion.liontalk.features.chatroom.components.ChatMessageItem
 import com.likelion.liontalk.features.chatroom.components.ChatRoomSettingContent
+import com.likelion.liontalk.features.chatroom.components.ExplosionEffect
 import com.likelion.liontalk.model.ChatUser
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -89,6 +90,9 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
     // 추방 다이얼로그
     var showKickDialog by remember { mutableStateOf(false) }
     var kickTarget by remember { mutableStateOf<ChatUser?>(null)}
+
+    var showExplodDialog by remember { mutableStateOf(false) }
+    val explodedState by viewModel.explodeState.collectAsState()
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -127,6 +131,12 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
                         "채팅방에서 추방 당했습니다. ㅠ.ㅠ",
                         Toast.LENGTH_SHORT
                     ).show()
+                    navController.popBackStack()
+                }
+                is ChatRoomEvent.Exploded -> {
+                    navController.previousBackStackEntry?.
+                    savedStateHandle?.set("explodedRoomId",roomId)
+
                     navController.popBackStack()
                 }
                 else -> Unit
@@ -242,7 +252,6 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
             ChatRoomSettingContent(viewModel = viewModel,
                 onClose = {showSettingsPanel = false},
                 onKickUser = {target ->
-                    // TODO
                     kickTarget = target
                     showKickDialog = true
                 },
@@ -250,9 +259,17 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
                     showLeaveDialog = true
                 },
                 explodeRoom = {
-                    // TODO
+                    showExplodDialog = true
                 }
             )
+        }
+
+        if (explodedState) {
+            ExplosionEffect(onExploded = {
+                navController.previousBackStackEntry?.savedStateHandle?.set("explodedRoomId",roomId)
+
+                navController.popBackStack()
+            })
         }
 
     }
@@ -315,4 +332,28 @@ fun ChatRoomScreen(navController: NavController, roomId: Int){
         )
     }
 
+    if (showExplodDialog) {
+        AlertDialog(
+            onDismissRequest = { showExplodDialog = false},
+            title = { Text("채팅방 폭파!!")},
+            text = { Text("채팅방을 폭파 하시겠습니까?")},
+            confirmButton = {
+                TextButton(onClick = {
+                    showExplodDialog = false
+                    showSettingsPanel = false
+                    // TODO
+                    viewModel.triggerExplosion()
+                }) {
+                    Text("확인")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showExplodDialog = false
+                }) {
+                    Text("취소")
+                }
+            }
+        )
+    }
 }

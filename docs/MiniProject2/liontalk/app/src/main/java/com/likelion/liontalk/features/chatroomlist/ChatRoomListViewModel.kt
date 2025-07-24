@@ -97,6 +97,11 @@ class ChatRoomListViewModel(application: Application) : ViewModel() {
         _state.value = _state.value.copy(currentTab = tab)
     }
 
+    fun removeChatRoom(roomId: Int) {
+        viewModelScope.launch {
+            chatRoomRepository.deleteChatRoomToRemote(roomId)
+        }
+    }
 
 
     //---------------------MQTT--------------------------

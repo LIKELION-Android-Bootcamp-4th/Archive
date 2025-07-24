@@ -129,6 +129,7 @@ fun ChatRoomSettingContent(
                 Button(
                     onClick = {
                         // TODO 방 폭파
+                        explodeRoom()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
