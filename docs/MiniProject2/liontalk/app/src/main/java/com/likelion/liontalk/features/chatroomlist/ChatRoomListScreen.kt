@@ -55,9 +55,11 @@ import com.likelion.liontalk.ui.theme.navigation.Screen
 fun ChatRoomListScreen(navController : NavHostController) {
 
     val context = LocalContext.current
-    val viewModel = remember {
-        ChatRoomListViewModel(context.applicationContext as Application)
-    }
+    val viewModel:ChatRoomListViewModel = viewModel()
+
+//    val viewModel = remember {
+//        ChatRoomListViewModel(context.applicationContext as Application)
+//    }
 
 //    val state by viewModel.state.observeAsState(ChatRoomListState())
     val state by viewModel.state.collectAsState()

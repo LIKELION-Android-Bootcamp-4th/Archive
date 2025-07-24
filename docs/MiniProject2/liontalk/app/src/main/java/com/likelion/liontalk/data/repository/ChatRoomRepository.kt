@@ -68,6 +68,9 @@ class ChatRoomRepository(context: Context) {
                 val unReadCount = chatMessageLocal.getUnreadMessageCount(remoteRoom.id,lastReadMessageId)
 
                 if (localRoom != null) {
+
+                    local.updateLockStatus(remoteRoom.id,remoteRoom.isLocked)
+
                     // 기존 채팅방이 있으면 users만 업데이트
                     local.updateUsers(remoteRoom.id, remoteRoom.users)
                     Log.d("ChattingRoom-Sync", "기존 채팅방 '${remoteRoom.id}'의 참여자:${remoteRoom.users} 업데이트")

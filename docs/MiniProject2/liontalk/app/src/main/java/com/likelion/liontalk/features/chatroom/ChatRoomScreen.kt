@@ -58,6 +58,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.likelion.liontalk.features.chatroom.components.ChatMessageItem
 import com.likelion.liontalk.features.chatroom.components.ChatRoomSettingContent
@@ -70,9 +71,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChatRoomScreen(navController: NavController, roomId: Int){
     val context = LocalContext.current
-    val viewModel = remember {
-        ChatRoomViewModel(context.applicationContext as Application,roomId)
-    }
+//    val viewModel = remember {
+//        ChatRoomViewModel(context.applicationContext as Application,roomId)
+//    }
+    val viewModel : ChatRoomViewModel = viewModel(
+        factory = ChatRoomViewModelFactory(context.applicationContext as Application,roomId)
+    )
 
 //    val messages by viewModel.messages.observeAsState(emptyList())    //for LiveData
     val messages by viewModel.messages.collectAsState() //for Flow

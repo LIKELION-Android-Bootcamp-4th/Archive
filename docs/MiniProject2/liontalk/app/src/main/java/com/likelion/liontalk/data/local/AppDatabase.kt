@@ -16,11 +16,28 @@ import com.likelion.liontalk.data.local.entity.ChatRoomEntity
 abstract class AppDatabase : RoomDatabase(){
     abstract fun chatRoomDao() : ChatRoomDao
     abstract fun chatMessageDao() : ChatMessageDao
+
     companion object {
-        fun create(content : Context) : AppDatabase = Room.databaseBuilder(
-            content.applicationContext,
-            AppDatabase:: class.java,
-            "chat_db"
-        ).fallbackToDestructiveMigration().build()
+        private var _instance: AppDatabase? = null
+        fun getInstance(context: Context): AppDatabase {
+            return _instance ?: synchronized(this) {
+                _instance ?: Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase:: class.java,
+                    "chat_db",
+
+                ).fallbackToDestructiveMigration()
+                    .build()
+                    .also { _instance = it }
+            }
+        }
     }
+
+//    companion object {
+//        fun create(content : Context) : AppDatabase = Room.databaseBuilder(
+//            content.applicationContext,
+//            AppDatabase:: class.java,
+//            "chat_db"
+//        ).fallbackToDestructiveMigration().build()
+//    }
 }

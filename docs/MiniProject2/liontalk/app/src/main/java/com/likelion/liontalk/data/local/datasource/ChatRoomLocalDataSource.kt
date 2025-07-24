@@ -8,7 +8,7 @@ import com.likelion.liontalk.model.ChatUser
 import kotlinx.coroutines.flow.Flow
 
 class ChatRoomLocalDataSource(context: Context) {
-    private val dao = AppDatabase.create(context).chatRoomDao()
+    private val dao = AppDatabase.getInstance(context).chatRoomDao()
 
     fun getChatRooms() : LiveData<List<ChatRoomEntity>> {
         return dao.getChatRooms()
