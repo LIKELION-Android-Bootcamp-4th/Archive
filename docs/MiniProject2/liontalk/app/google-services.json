@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "272969603289",
+    "project_id": "liontalk-10373",
+    "storage_bucket": "liontalk-10373.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:272969603289:android:c775a80f01eba5c54006c8",
+        "android_client_info": {
+          "package_name": "com.likelion.liontalk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDE71nshaBVehnAy-Vdltf5iuXbdTuJWFY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
