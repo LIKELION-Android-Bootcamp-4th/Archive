@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ChatRoomViewModel(application: Application, private val roomId: Int) : AndroidViewModel(application){
+class ChatRoomViewModel(application: Application, private val roomId: String) : AndroidViewModel(application){
     private val chatMessageRepository = ChatMessageRepository(application.applicationContext)
     private val chatRoomRepository = ChatRoomRepository(application.applicationContext)
 //    val messages : LiveData<List<ChatMessageEntity>> = chatMessageRepository.getMessagesForRoom(roomId)
@@ -279,7 +279,6 @@ class ChatRoomViewModel(application: Application, private val roomId: Int) : And
 
     private fun postSystemMessage(content:String) {
         val systemMessage = ChatMessage(
-            id = -1,
             roomId = roomId,
             sender = me,
             content = content,

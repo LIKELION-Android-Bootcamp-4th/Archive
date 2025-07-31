@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import com.likelion.liontalk.data.local.datasource.ChatMessageLocalDataSource
 import com.likelion.liontalk.data.local.datasource.ChatRoomLocalDataSource
 import com.likelion.liontalk.data.local.entity.ChatMessageEntity
+import com.likelion.liontalk.data.remote.datasource.ChatMessageFirestoreDataSource
 import com.likelion.liontalk.data.remote.datasource.ChatMessageRemoteDataSource
 import com.likelion.liontalk.data.remote.dto.ChatMessageDto
 import com.likelion.liontalk.model.ChatMessage
@@ -17,7 +18,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class ChatMessageRepository(context: Context) {
-    private val remote = ChatMessageRemoteDataSource()
+//    private val remote = ChatMessageRemoteDataSource()
+    private val remote = ChatMessageFirestoreDataSource()
     private val local = ChatMessageLocalDataSource(context)
 
     private val roomLocal = ChatRoomLocalDataSource(context)
@@ -28,15 +30,15 @@ class ChatMessageRepository(context: Context) {
     }
 
     // 현재 로컬 db에 저장된 메세지 목록을 가져옴.
-    fun getMessagesForRoom(roomId: Int): LiveData<List<ChatMessageEntity>> {
+    fun getMessagesForRoom(roomId: String): LiveData<List<ChatMessageEntity>> {
         return local.getMessageForRoom(roomId)
     }
 
-    suspend fun syncFromServer(roomId: Int){
+    suspend fun syncFromServer(roomId: String){
         try {
 
             val room = roomLocal.getChatRoom(roomId)
-            val lastReadMessageId = room?.lastReadMessageId ?:0
+            val lastReadMessageId = room?.lastReadMessageId ?:""
 
             Log.d(TAG, "서버에서 전체 메시지 목록을 가져오는 중...")
             val remoteMessages = remote.fetchMessagesByRoomId(roomId)
@@ -69,7 +71,7 @@ class ChatMessageRepository(context: Context) {
         // roomId → lastReadMessageId 맵 생성
         val lastReadMap = chatRooms.associateBy({ it.id }, { it.lastReadMessageId })
         val filtered = remoteMessages.filter { message ->
-            val lastReadId = lastReadMap[message.roomId] ?: 0
+            val lastReadId = lastReadMap[message.roomId] ?: ""
             message.id > lastReadId
         }
         Log.d(TAG, "신규 메세지 ${filtered.size}개 필터링")
@@ -83,7 +85,7 @@ class ChatMessageRepository(context: Context) {
 
     }
 
-    fun getMessagesForRoomFlow(roomId: Int): Flow<List<ChatMessage>> {
+    fun getMessagesForRoomFlow(roomId: String): Flow<List<ChatMessage>> {
         return local.getMessageForRoomFlow(roomId)
             .map { entity -> entity
                 .map { it.toModel() } }
@@ -117,7 +119,7 @@ class ChatMessageRepository(context: Context) {
         local.insert(message.toEntity())
     }
 
-    suspend fun fetchUnreadCountFromServer(roomId:Int, lastReadMessageId: Int?):Int {
+    suspend fun fetchUnreadCountFromServer(roomId:String, lastReadMessageId: String?):Int {
         val remoteMessages = remote.fetchMessagesByRoomId(roomId)
         Log.d("UnreadCount", "roomId=$roomId, lastReadMessageId=$lastReadMessageId")
         Log.d("UnreadCount", "fetched ${remoteMessages.size} messages")
@@ -132,7 +134,7 @@ class ChatMessageRepository(context: Context) {
         }
     }
 
-    suspend fun getLatestMessage(roomId: Int) : ChatMessage? {
+    suspend fun getLatestMessage(roomId: String) : ChatMessage? {
         return local.getLatestMessage(roomId)?.toModel()
     }
 }

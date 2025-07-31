@@ -10,7 +10,8 @@ object ChatRoomMapper {
         owner,
         users,
         0,
-        0,
+        "",
+        lastReadMessageTimestamp = 0L,
         isLocked,
         createdAt
     )
@@ -21,7 +22,7 @@ object ChatRoomMapper {
         owner,
         users,
         0,
-        0,
+        "",
         isLocked,
         createdAt
     )

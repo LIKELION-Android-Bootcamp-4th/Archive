@@ -6,12 +6,13 @@ import com.likelion.liontalk.model.ChatUser
 
 @Entity(tableName = "chat_room")
 data class ChatRoomEntity(
-    @PrimaryKey val id: Int = 0,
+    @PrimaryKey val id: String="",
     val title : String,
     val owner : ChatUser,
     val users : List<ChatUser> = emptyList(),
     val unReadCount:Int = 0,
-    val lastReadMessageId:Int = 0,
+    val lastReadMessageId:String="",
+    val lastReadMessageTimestamp: Long = 0L,
     val isLocked : Boolean = false,
     val createdAt: Long
 )

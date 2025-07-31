@@ -17,11 +17,11 @@ interface ChatRoomApiService {
     suspend fun createRoom(@Body chatRoom: ChatRoomDto) : Response<ChatRoomDto>
 
     @DELETE("chatrooms/{id}")
-    suspend fun deleteRoom(@Path("id") id: Int) : Response<Unit>
+    suspend fun deleteRoom(@Path("id") id: String) : Response<Unit>
 
     @GET("chatrooms/{id}")
-    suspend fun getChatRoom(@Path("id") id: Int) : ChatRoomDto
+    suspend fun getChatRoom(@Path("id") id: String) : ChatRoomDto
 
     @PUT("chatrooms/{id}")
-    suspend fun updateChatRoom(@Path("id") id: Int, @Body dto: ChatRoomDto) : Response<ChatRoomDto>
+    suspend fun updateChatRoom(@Path("id") id: String, @Body dto: ChatRoomDto) : Response<ChatRoomDto>
 }

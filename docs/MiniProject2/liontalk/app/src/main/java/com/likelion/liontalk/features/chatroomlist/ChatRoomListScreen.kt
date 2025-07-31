@@ -72,12 +72,12 @@ fun ChatRoomListScreen(navController : NavHostController) {
         ChatRoomTab.NOT_JOINED to "미참여"
     )
 
-    val explodedRoomId = navController.currentBackStackEntry?.savedStateHandle?.get<Int>("explodedRoomId")
+    val explodedRoomId = navController.currentBackStackEntry?.savedStateHandle?.get<String>("explodedRoomId")
     LaunchedEffect(explodedRoomId) {
         explodedRoomId?.let {
             viewModel.removeChatRoom(explodedRoomId)
 
-            navController.currentBackStackEntry?.savedStateHandle?.remove<Int>("explodedRoomId")
+            navController.currentBackStackEntry?.savedStateHandle?.remove<String>("explodedRoomId")
 
         }
     }

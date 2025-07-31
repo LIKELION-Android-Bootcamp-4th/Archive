@@ -22,11 +22,11 @@ class ChatRoomLocalDataSource(context: Context) {
         return dao.getChatRoomsFlow()
     }
 
-    fun getChatRoom(roomId: Int) : ChatRoomEntity? {
+    fun getChatRoom(roomId: String) : ChatRoomEntity? {
         return dao.getChatRoom(roomId)
     }
 
-    fun getChatRoomFlow(roomId: Int) : Flow<ChatRoomEntity?> {
+    fun getChatRoomFlow(roomId: String) : Flow<ChatRoomEntity?> {
         return dao.getChatRoomFlow(roomId)
     }
 
@@ -42,7 +42,7 @@ class ChatRoomLocalDataSource(context: Context) {
         dao.delete(chatRoom)
     }
 
-    suspend fun updateUsers(id:Int,users:List<ChatUser>) {
+    suspend fun updateUsers(id:String,users:List<ChatUser>) {
         dao.updateUsers(id,users)
     }
 
@@ -54,19 +54,23 @@ class ChatRoomLocalDataSource(context: Context) {
         return dao.getCount()
     }
 
-    suspend fun updateLastReadMessageId(id: Int, lastReadMessageId:Int) {
+    suspend fun updateLastReadMessageId(id: String, lastReadMessageId:String) {
         dao.updateLastReadMessageId(id,lastReadMessageId)
     }
 
-    suspend fun updateUnReadCount(id: Int, unReadCount: Int) {
+    suspend fun updateLastReadMessage(id: String, lastReadMessageId:String, lastReadMessageTimestamp:Long) {
+        dao.updateLastReadMessage(id,lastReadMessageId,lastReadMessageTimestamp)
+    }
+
+    suspend fun updateUnReadCount(id: String, unReadCount: Int) {
         dao.updateUnReadCount(id, unReadCount)
     }
 
-    suspend fun updateLockStatus(id: Int, isLocked: Boolean) {
+    suspend fun updateLockStatus(id: String, isLocked: Boolean) {
         dao.updateLockStatus(id, isLocked)
     }
 
-    suspend fun deleteById(id:Int) {
+    suspend fun deleteById(id:String) {
         dao.deleteById(id)
     }
 }

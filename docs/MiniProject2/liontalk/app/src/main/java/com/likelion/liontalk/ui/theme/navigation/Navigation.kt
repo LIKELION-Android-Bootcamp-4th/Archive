@@ -20,7 +20,7 @@ fun ChatAppNavigation(navController: NavHostController) {
         }
 
         composable(Screen.ChatRoomScreen.route) { backStackentry ->
-            val roomId = backStackentry.arguments?.getString("roomId")?.toIntOrNull()
+            val roomId = backStackentry.arguments?.getString("roomId")?.toString()
             if (roomId != null) {
                 ChatRoomScreen(navController, roomId)
             }

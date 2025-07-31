@@ -23,6 +23,9 @@ coroutines = "1.10.2"
 coil = "2.7.0"
 runtimeLivedata = "1.8.3"
 
+google-services = "4.4.3"
+firebase-bom = "34.0.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -58,9 +61,16 @@ lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-auth = { module = "com.google.firebase:firebase-auth-ktx"}
+firebase-firestore = { module = "com.google.firebase:firebase-firestore-ktx"}
+#firebase-firestore = { module = "com.google.firebase:firebase-firestore-ktx", version = "25.1.4" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 

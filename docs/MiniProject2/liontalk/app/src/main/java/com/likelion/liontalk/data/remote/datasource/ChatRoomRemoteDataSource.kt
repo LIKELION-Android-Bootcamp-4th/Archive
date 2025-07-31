@@ -12,7 +12,7 @@ class ChatRoomRemoteDataSource {
         return api.getChatRooms()
     }
 
-    suspend fun fetchRoom(id: Int) : ChatRoomDto {
+    suspend fun fetchRoom(id: String) : ChatRoomDto {
         return api.getChatRoom(id)
     }
 
@@ -32,7 +32,7 @@ class ChatRoomRemoteDataSource {
         return response.body()
     }
 
-    suspend fun deleteRoom(id: Int) {
+    suspend fun deleteRoom(id: String) {
         val response = api.deleteRoom(id)
         if(!response.isSuccessful) {
             throw Exception("서버 채팅방 삭제 실패:${response.message()} , ${response.code()}")

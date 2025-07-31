@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import com.likelion.liontalk.data.local.datasource.ChatMessageLocalDataSource
 import com.likelion.liontalk.data.local.datasource.ChatRoomLocalDataSource
 import com.likelion.liontalk.data.local.entity.ChatRoomEntity
+import com.likelion.liontalk.data.remote.datasource.ChatRoomFirestoreDataSource
 import com.likelion.liontalk.data.remote.datasource.ChatRoomRemoteDataSource
 import com.likelion.liontalk.data.remote.dto.ChatRoomDto
 import com.likelion.liontalk.data.remote.dto.addUserIfNotExists
@@ -18,8 +19,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class ChatRoomRepository(context: Context) {
-    private val remote = ChatRoomRemoteDataSource()
+//    private val remote = ChatRoomRemoteDataSource()
     private val local = ChatRoomLocalDataSource(context)
+    private val remote = ChatRoomFirestoreDataSource()
 
     private val chatMessageLocal = ChatMessageLocalDataSource(context)
 
@@ -39,7 +41,7 @@ class ChatRoomRepository(context: Context) {
         }
     }
 
-    suspend fun deleteChatRoomToRemote(roomId: Int) {
+    suspend fun deleteChatRoomToRemote(roomId: String) {
 
         remote.deleteRoom(roomId)
 
@@ -63,7 +65,7 @@ class ChatRoomRepository(context: Context) {
 
             for (remoteRoom in remoteRooms) {
                 val localRoom = local.getChatRoom(remoteRoom.id)
-                val lastReadMessageId = localRoom?.lastReadMessageId ?:0
+                val lastReadMessageId = localRoom?.lastReadMessageId ?:""
 
                 val unReadCount = chatMessageLocal.getUnreadMessageCount(remoteRoom.id,lastReadMessageId)
 
@@ -101,13 +103,13 @@ class ChatRoomRepository(context: Context) {
         }
     }
 
-    suspend fun syncRoom(roomId : Int) {
+    suspend fun syncRoom(roomId : String) {
         try {
             val remoteRoom = remote.fetchRoom(roomId)
 
             if (remoteRoom != null) {
                 val localRoom = local.getChatRoom(remoteRoom.id)
-                val lastReadMessageId = localRoom?.lastReadMessageId ?:0
+                val lastReadMessageId = localRoom?.lastReadMessageId ?:""
                 val unReadCount = chatMessageLocal.getUnreadMessageCount(remoteRoom.id,lastReadMessageId)
                 if (localRoom != null) {
                     local.updateLockStatus(remoteRoom.id,remoteRoom.isLocked)
@@ -135,14 +137,14 @@ class ChatRoomRepository(context: Context) {
     }
 
     // 서버 및 로컬 room db 입장 처리
-    suspend fun enterRoom(user:ChatUser,roomId: Int): ChatRoom {
+    suspend fun enterRoom(user:ChatUser,roomId: String): ChatRoom {
         try {
             //1.서버로 부터 최신 룸 정보를 가져옴
             Log.d("","enterRoom - user : $user roomId:$roomId")
             val remoteRoom = remote.fetchRoom(roomId)
-            val requestDto = remoteRoom.addUserIfNotExists(user)
+            val requestDto = remoteRoom?.addUserIfNotExists(user)
             Log.d("","enterRoom - requestDto : $requestDto")
-            val updatedRoom = remote.updateRoom(requestDto)
+            val updatedRoom = requestDto?.let { remote.updateRoom(it) }
             if (updatedRoom != null) {
                 Log.d("","enterRoom - updatedRoom : $updatedRoom")
                 local.updateUsers(roomId, updatedRoom.users)
@@ -154,18 +156,18 @@ class ChatRoomRepository(context: Context) {
         }
     }
 
-    suspend fun updateLastReadMessageId(roomId : Int,lastReadMessageId: Int) {
+    suspend fun updateLastReadMessageId(roomId : String,lastReadMessageId: String) {
         local.updateLastReadMessageId(roomId,lastReadMessageId)
     }
 
-    suspend fun updateUnReadCount(roomId:Int, unReadCount: Int) {
+    suspend fun updateUnReadCount(roomId:String, unReadCount: Int) {
         local.updateUnReadCount(roomId,unReadCount)
     }
-    suspend fun updateLockStatus(roomId:Int, isLocked:Boolean) {
+    suspend fun updateLockStatus(roomId:String, isLocked:Boolean) {
         try {
             val remoteRoom = remote.fetchRoom(roomId)
-            val updated = remoteRoom.copy(isLocked = isLocked)
-            val result = remote.updateRoom(updated) ?: throw Exception("방 잠금($isLocked) 실패")
+            val updated = remoteRoom?.copy(isLocked = isLocked)
+            val result = updated?.let { remote.updateRoom(it) } ?: throw Exception("방 잠금($isLocked) 실패")
 
             result?.let {
                 local.updateLockStatus(roomId,isLocked)
@@ -175,26 +177,26 @@ class ChatRoomRepository(context: Context) {
         }
     }
 
-    suspend fun getChatRoom(roomId:Int) :ChatRoom? {
+    suspend fun getChatRoom(roomId:String) :ChatRoom? {
         return local.getChatRoom(roomId)?.toModel()
     }
 
 
-    fun getChatRoomFlow(roomId: Int):Flow<ChatRoom> {
+    fun getChatRoomFlow(roomId: String):Flow<ChatRoom> {
         return local.getChatRoomFlow(roomId).map { it?.toModel() ?:
             throw Exception("해당 채팅방이 없습니다.")}
     }
 
-    suspend fun getRoomFromRemote(roomId: Int) : ChatRoom? {
+    suspend fun getRoomFromRemote(roomId: String) : ChatRoom? {
         try {
-            return remote.fetchRoom(roomId).toModel()
+            return remote.fetchRoom(roomId)?.toModel()
         } catch (e: Exception ) {
             Log.e("","채팅방이 존재 하지 않습니다.${e.message}",e)
             throw e
         }
     }
 
-    suspend fun removeUserFromRoom(user:ChatUser, roomId: Int) {
+    suspend fun removeUserFromRoom(user:ChatUser, roomId: String) {
         val room = remote.fetchRoom(roomId)
         if(room != null) {
             val updated = room.removeUser(user)
@@ -207,7 +209,7 @@ class ChatRoomRepository(context: Context) {
         }
     }
 
-    suspend fun toggleLock(isLock : Boolean, roomId: Int) {
+    suspend fun toggleLock(isLock : Boolean, roomId: String) {
         try {
             val remoteRoom = remote.fetchRoom(roomId)
             if(remoteRoom != null) {

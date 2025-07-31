@@ -1,8 +1,8 @@
 package com.likelion.liontalk.model
 
 class ChatMessage(
-    val id: Int = 0,
-    val roomId: Int,
+    val id: String="",
+    val roomId: String,
     val sender: ChatUser,
     val content: String,
     val type: String? = "text",

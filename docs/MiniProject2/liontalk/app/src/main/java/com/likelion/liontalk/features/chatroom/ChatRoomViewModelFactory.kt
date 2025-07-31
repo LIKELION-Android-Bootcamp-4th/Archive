@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 
 class ChatRoomViewModelFactory(
     private val application : Application,
-    private val roomId: Int) : ViewModelProvider.Factory {
+    private val roomId: String) : ViewModelProvider.Factory {
     override  fun <T : ViewModel> create(modelClass: Class<T>): T {
         if(modelClass.isAssignableFrom(ChatRoomViewModel::class.java)) {
             return ChatRoomViewModel(application,roomId) as T

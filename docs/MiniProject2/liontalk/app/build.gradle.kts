@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -81,7 +83,24 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.okhttp.logging)
 
+//    //firebase
+//    implementation(platform(libs.firebase.bom))
+//
+//    implementation(libs.firebase.analytics)
+//    implementation(libs.firebase.auth)
+//    implementation(libs.firebase.firestore)
 
+    implementation("com.google.firebase:firebase-auth-ktx:23.2.0")
+    implementation("com.google.firebase:firebase-firestore-ktx:25.1.1")
+    implementation("com.google.firebase:firebase-analytics:22.1.2")
+
+//    // Firebase BOM
+//    implementation(platform("com.google.firebase:firebase-bom:34.0.0"))
+//
+//    // Firestore SDK
+//    implementation("com.google.firebase:firebase-firestore-ktx")
+//    implementation("com.google.firebase:firebase-auth-ktx")
+//    implementation("com.google.firebase:firebase-analytics")
 
     kapt(libs.room.compiler)
 

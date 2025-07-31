@@ -98,7 +98,7 @@ class ChatRoomListViewModel(application: Application) : AndroidViewModel(applica
         _state.value = _state.value.copy(currentTab = tab)
     }
 
-    fun removeChatRoom(roomId: Int) {
+    fun removeChatRoom(roomId: String) {
         viewModelScope.launch {
             try {
                 val room = chatRoomRepository.getRoomFromRemote(roomId)

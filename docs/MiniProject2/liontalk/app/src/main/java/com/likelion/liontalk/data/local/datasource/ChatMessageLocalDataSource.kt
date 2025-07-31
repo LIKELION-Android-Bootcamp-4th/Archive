@@ -17,23 +17,23 @@ class ChatMessageLocalDataSource(context: Context) {
         dao.insert(message)
     }
 
-    fun getMessageForRoom(roomId: Int) : LiveData<List<ChatMessageEntity>> {
+    fun getMessageForRoom(roomId: String) : LiveData<List<ChatMessageEntity>> {
         return dao.getMessagesForRoom(roomId)
     }
 
-    fun getMessageForRoomFlow(roomId: Int) : Flow<List<ChatMessageEntity>> {
+    fun getMessageForRoomFlow(roomId: String) : Flow<List<ChatMessageEntity>> {
         return dao.getMessagesForRoomFlow(roomId)
     }
 
-    suspend fun getMessages(roomId: Int) : List<ChatMessageEntity> {
+    suspend fun getMessages(roomId: String) : List<ChatMessageEntity> {
         return dao.getMessages(roomId)
     }
 
-    suspend fun getLatestMessage(roomId: Int):ChatMessageEntity ? {
+    suspend fun getLatestMessage(roomId: String):ChatMessageEntity ? {
         return dao.getLatestMessage(roomId)
     }
 
-    suspend fun deleteMessagesByRoomId(roomId:Int) {
+    suspend fun deleteMessagesByRoomId(roomId:String) {
         dao.deleteMessagesByRoomId(roomId)
     }
 
@@ -41,7 +41,7 @@ class ChatMessageLocalDataSource(context: Context) {
         dao.insertAll(messages)
     }
 
-    suspend fun getUnreadMessageCount(roomId: Int, lastReadMessageId: Int): Int {
+    suspend fun getUnreadMessageCount(roomId: String, lastReadMessageId: String): Int {
         return dao.getUnreadMessageCount(roomId,lastReadMessageId)
     }
 }

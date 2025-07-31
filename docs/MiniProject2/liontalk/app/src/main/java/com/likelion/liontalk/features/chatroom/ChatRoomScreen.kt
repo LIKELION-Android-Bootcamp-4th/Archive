@@ -71,7 +71,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatRoomScreen(navController: NavController, roomId: Int){
+fun ChatRoomScreen(navController: NavController, roomId: String){
     val context = LocalContext.current
 //    val viewModel = remember {
 //        ChatRoomViewModel(context.applicationContext as Application,roomId)

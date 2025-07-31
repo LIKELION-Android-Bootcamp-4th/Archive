@@ -33,17 +33,17 @@ interface ChatRoomDao {
 
     // id 에 해당하는 채팅룸 데이터 가져오기
     @Query("SELECT * FROM chat_room WHERE id=:id")
-    fun getChatRoom(id : Int) : ChatRoomEntity?
+    fun getChatRoom(id : String) : ChatRoomEntity?
 
     @Query("SELECT * FROM chat_room WHERE id=:id")
-    fun getChatRoomFlow(id : Int) : Flow<ChatRoomEntity?>
+    fun getChatRoomFlow(id : String) : Flow<ChatRoomEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(chatRooms : List<ChatRoomEntity>)
 
     // 채팅방의 사용자 정보만 업데이트 함.
     @Query("UPDATE chat_room SET users = :users WHERE id = :id")
-    suspend fun updateUsers(id:Int, users:List<ChatUser>)
+    suspend fun updateUsers(id:String, users:List<ChatUser>)
 
     @Query("SELECT COUNT(*) FROM chat_room")
     suspend fun getCount():Int
@@ -52,14 +52,17 @@ interface ChatRoomDao {
     suspend fun clear()
 
     @Query("UPDATE chat_room SET lastReadMessageId =:lastReadMessageId WHERE id =:id")
-    suspend fun updateLastReadMessageId(id:Int, lastReadMessageId: Int)
+    suspend fun updateLastReadMessageId(id:String, lastReadMessageId: String)
+
+    @Query("UPDATE chat_room SET lastReadMessageId =:lastReadMessageId , lastReadMessageTimestamp =:lastReadMessageTimestamp WHERE id =:id")
+    suspend fun updateLastReadMessage(id:String, lastReadMessageId: String,lastReadMessageTimestamp:Long)
 
     @Query("UPDATE chat_room SET unReadCount =:unReadCount WHERE id=:id")
-    suspend fun updateUnReadCount(id:Int, unReadCount:Int)
+    suspend fun updateUnReadCount(id:String, unReadCount:Int)
 
     @Query("UPDATE chat_room SET isLocked = :isLocked WHERE id=:id")
-    suspend fun updateLockStatus(id: Int, isLocked : Boolean)
+    suspend fun updateLockStatus(id: String, isLocked : Boolean)
 
     @Query("DELETE FROM chat_room WHERE id=:id")
-    suspend fun deleteById(id:Int)
+    suspend fun deleteById(id:String)
 }
