@@ -7,6 +7,7 @@ import com.likelion.liontalk.data.local.datasource.ChatMessageLocalDataSource
 import com.likelion.liontalk.data.local.datasource.ChatRoomLocalDataSource
 import com.likelion.liontalk.data.local.entity.ChatMessageEntity
 import com.likelion.liontalk.data.remote.datasource.ChatMessageRemoteDataSource
+import com.likelion.liontalk.data.remote.datasource.ChatMessageSupabaseDataSource
 import com.likelion.liontalk.data.remote.dto.ChatMessageDto
 import com.likelion.liontalk.model.ChatMessage
 import com.likelion.liontalk.model.ChatMessageMapper.toEntity
@@ -17,8 +18,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class ChatMessageRepository(context: Context) {
-    private val remote = ChatMessageRemoteDataSource()
+//    private val remote = ChatMessageRemoteDataSource()
     private val local = ChatMessageLocalDataSource(context)
+    private val remote = ChatMessageSupabaseDataSource()
 
     private val roomLocal = ChatRoomLocalDataSource(context)
 

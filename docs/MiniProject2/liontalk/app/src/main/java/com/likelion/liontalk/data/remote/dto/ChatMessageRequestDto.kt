@@ -5,8 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ChatMessageDto(
-    val id: Int = 0,
+data class ChatMessageRequestDto(
     @SerialName("room_id")
     val roomId: Int,
     val sender: ChatUser,

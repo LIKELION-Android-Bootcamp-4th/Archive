@@ -2,6 +2,7 @@ package com.likelion.liontalk.model
 
 import com.likelion.liontalk.data.local.entity.ChatRoomEntity
 import com.likelion.liontalk.data.remote.dto.ChatRoomDto
+import com.likelion.liontalk.data.remote.dto.ChatRoomRequestDto
 
 object ChatRoomMapper {
     fun ChatRoomDto.toEntity() = ChatRoomEntity(
@@ -46,4 +47,11 @@ object ChatRoomMapper {
         createdAt
     )
 
+    fun ChatRoomDto.toRequest() = ChatRoomRequestDto(
+        title,
+        owner,
+        users,
+        isLocked,
+        createdAt
+    )
 }

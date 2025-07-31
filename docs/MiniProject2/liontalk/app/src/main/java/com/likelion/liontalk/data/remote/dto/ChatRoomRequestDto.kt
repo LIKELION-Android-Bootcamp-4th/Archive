@@ -5,8 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ChatRoomDto(
-    val id: Int,
+data class ChatRoomRequestDto(
     val title: String,
     val owner: ChatUser,
     val users: List<ChatUser> = emptyList<ChatUser>(),

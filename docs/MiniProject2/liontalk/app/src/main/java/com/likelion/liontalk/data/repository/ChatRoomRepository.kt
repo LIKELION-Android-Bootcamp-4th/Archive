@@ -7,6 +7,7 @@ import com.likelion.liontalk.data.local.datasource.ChatMessageLocalDataSource
 import com.likelion.liontalk.data.local.datasource.ChatRoomLocalDataSource
 import com.likelion.liontalk.data.local.entity.ChatRoomEntity
 import com.likelion.liontalk.data.remote.datasource.ChatRoomRemoteDataSource
+import com.likelion.liontalk.data.remote.datasource.ChatRoomSupabaseDataSource
 import com.likelion.liontalk.data.remote.dto.ChatRoomDto
 import com.likelion.liontalk.data.remote.dto.addUserIfNotExists
 import com.likelion.liontalk.data.remote.dto.removeUser
@@ -18,8 +19,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class ChatRoomRepository(context: Context) {
-    private val remote = ChatRoomRemoteDataSource()
+//    private val remote = ChatRoomRemoteDataSource()
     private val local = ChatRoomLocalDataSource(context)
+    private val remote = ChatRoomSupabaseDataSource()
 
     private val chatMessageLocal = ChatMessageLocalDataSource(context)
 

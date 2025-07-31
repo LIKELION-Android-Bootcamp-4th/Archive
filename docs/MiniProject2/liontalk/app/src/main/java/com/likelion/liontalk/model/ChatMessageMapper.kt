@@ -2,6 +2,7 @@ package com.likelion.liontalk.model
 
 import com.likelion.liontalk.data.local.entity.ChatMessageEntity
 import com.likelion.liontalk.data.remote.dto.ChatMessageDto
+import com.likelion.liontalk.data.remote.dto.ChatMessageRequestDto
 
 object ChatMessageMapper {
     fun ChatMessageDto.toEntity() = ChatMessageEntity(id,roomId,sender,content,createdAt)
@@ -10,4 +11,6 @@ object ChatMessageMapper {
     fun ChatMessageEntity.toModel() = ChatMessage(id,roomId,sender,content,"text", createdAt)
     fun ChatMessage.toEntity() = ChatMessageEntity(id,roomId,sender,content,createdAt)
     fun ChatMessage.toDto() = ChatMessageDto(id,roomId,sender,content,createdAt)
+
+    fun ChatMessageDto.toRequest() = ChatMessageRequestDto(roomId,sender,content,createdAt)
 }

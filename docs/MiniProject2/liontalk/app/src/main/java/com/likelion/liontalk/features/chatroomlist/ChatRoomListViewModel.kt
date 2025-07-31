@@ -46,9 +46,9 @@ class ChatRoomListViewModel(application: Application) : AndroidViewModel(applica
                     subscribeToMqttTopics()
                 }
 
-                withContext(Dispatchers.IO) {
-                    chatMessageRepository.syncAllMessagesFromServer()
-                }
+//                withContext(Dispatchers.IO) {
+//                    chatMessageRepository.syncAllMessagesFromServer()
+//                }
 
                 withContext(Dispatchers.IO) {
                     chatRoomRepository.syncFromServer()

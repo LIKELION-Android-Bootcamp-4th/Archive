@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
 }
 
 android {
@@ -84,6 +86,18 @@ dependencies {
 
 
     kapt(libs.room.compiler)
+
+    // Supabase 클라이언트
+    implementation("io.github.jan-tennert.supabase:gotrue-kt:1.2.0")    // 인증
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:1.2.0") // PostgREST API
+    // Ktor HTTP client engine for Android
+    implementation("io.ktor:ktor-client-okhttp:2.3.7")
+
+    // JSON 직렬화 (필수)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    // 코루틴
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
