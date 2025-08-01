@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.FirebaseApp
+import com.kakao.sdk.common.KakaoSdk
 import com.likelion.liontalk.data.remote.mqtt.MqttClient
 import com.likelion.liontalk.ui.theme.LiontalkTheme
 import com.likelion.liontalk.ui.theme.navigation.ChatAppNavigation
@@ -19,6 +21,9 @@ import com.likelion.liontalk.ui.theme.navigation.ChatAppNavigation
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        FirebaseApp.initializeApp(this)
+
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()

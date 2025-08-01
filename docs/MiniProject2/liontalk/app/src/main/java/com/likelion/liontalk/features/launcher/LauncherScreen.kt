@@ -62,7 +62,8 @@ fun LauncherScreen(navHostController: NavHostController) {
         val destination = if (user == null || user.name.isBlank()) {
             Screen.SettingScreen.route
         } else {
-            Screen.ChatRoomListScreen.route
+//            Screen.ChatRoomListScreen.route
+            Screen.SignScreen.route
         }
 
         withContext(Dispatchers.IO) {

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        android:name=".LionTalkApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -22,6 +23,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Kakao SDK 설정-->
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value="21fb0bd535c793bee21dd10106d6687b"/>
+
+<!--        <meta-data-->
+<!--            android:name="com.naver.sdk.ClientId"-->
+<!--            android:value="네이버_Client_ID" />-->
     </application>
 
 </manifest>

@@ -8,6 +8,7 @@ import com.likelion.liontalk.features.chatroom.ChatRoomScreen
 import com.likelion.liontalk.features.chatroomlist.ChatRoomListScreen
 import com.likelion.liontalk.features.launcher.LauncherScreen
 import com.likelion.liontalk.features.setting.SettingScreen
+import com.likelion.liontalk.features.sign.SignScreen
 
 @Composable
 fun ChatAppNavigation(navController: NavHostController) {
@@ -32,6 +33,10 @@ fun ChatAppNavigation(navController: NavHostController) {
 
         composable(Screen.LauncherScreen.route) {
             LauncherScreen(navController)
+        }
+
+        composable(Screen.SignScreen.route) {
+            SignScreen(navController)
         }
     }
 }

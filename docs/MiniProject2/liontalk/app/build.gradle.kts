@@ -3,6 +3,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    alias(libs.plugins.google.services)
+
 }
 
 android {
@@ -81,9 +84,23 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.okhttp.logging)
 
-
-
     kapt(libs.room.compiler)
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-functions-ktx")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+
+    // kakao auth
+    implementation("com.kakao.sdk:v2-user:2.20.3")
+
+    // naver auth
+    implementation("com.navercorp.nid:oauth:5.9.0")
+
+
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
