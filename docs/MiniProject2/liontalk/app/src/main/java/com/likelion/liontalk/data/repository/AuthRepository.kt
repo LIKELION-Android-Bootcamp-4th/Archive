@@ -2,6 +2,7 @@ package com.likelion.liontalk.data.repository
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.likelion.liontalk.data.remote.datasource.FirebaseAuthDataSource
 import com.likelion.liontalk.data.remote.datasource.KakaoDataSource
@@ -21,11 +22,13 @@ class AuthRepository(
 
     suspend fun kakaoLogin(): Unit {
         val accessToken = kakaoDataSource.signIn()
+        Log.d("AuthRepository","kakao token : $accessToken")
         signInWithCustomToken("kakaoCustomAuth", accessToken)
     }
 
     suspend fun naverLogin() {
         val accessToken = naverDataSource.signIn()
+        Log.d("AuthRepository","naver token : $accessToken")
         signInWithCustomToken("naverCustomAuth", accessToken)
     }
 
@@ -39,7 +42,15 @@ class AuthRepository(
     private suspend fun signInWithCustomToken(functionName: String, accessToken: String) {
         val result = firebaseAuthDataSource.requestCustomToken(functionName, accessToken).await()
         val customToken = (result.data as Map<*, *>)["token"] as String
-        firebaseAuthDataSource.signInWithCustomToken(customToken).await()
+
+        Log.d("AuthRepository","signInWithCustomToken token : $customToken")
+        try {
+            val authResult = firebaseAuthDataSource.signInWithCustomToken(customToken).await()
+            Log.d("AuthRepository","signInWithCustomToken success: ${authResult.user?.uid}")
+        } catch (e: Exception) {
+            Log.e("AuthRepository","signInWithCustomToken failed", e)
+            throw e
+        }
     }
 
 
