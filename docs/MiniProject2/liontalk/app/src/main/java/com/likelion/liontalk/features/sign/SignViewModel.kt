@@ -61,7 +61,7 @@ class SignViewModel(application: Application, private val authRepository: AuthRe
         launcher: ActivityResultLauncher<Intent>
     ) {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("359936561333-compute@developer.gserviceaccount.com") // Firebase 콘솔에서 발급한 Web client ID
+            .requestIdToken("") // Firebase 콘솔에서 발급한 Web client ID
             .requestEmail()
             .build()
 

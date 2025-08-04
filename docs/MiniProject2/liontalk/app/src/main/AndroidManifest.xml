@@ -27,7 +27,7 @@
         <!-- Kakao SDK 설정-->
         <meta-data
             android:name="com.kakao.sdk.AppKey"
-            android:value="21fb0bd535c793bee21dd10106d6687b"/>
+            android:value=""/>
 
 <!--        <meta-data-->
 <!--            android:name="com.naver.sdk.ClientId"-->
